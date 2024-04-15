@@ -1,0 +1,6 @@
+:root {
+  --color-black-400: hsla(0, 0%, 11%, 1);
+  --color-white-400: hsla(0, 0%, 100%, 1);
+
+  --font-family: 'Nunito Sans', sans-serif;
+}
