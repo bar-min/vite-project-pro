@@ -1,0 +1,169 @@
+<script setup>
+import { ref, computed, watch } from 'vue'
+
+defineOptions({
+  inheritAttrs: false
+})
+
+const props = defineProps({
+  list: {
+    type: Array,
+    required: true
+  },
+  placeholder: {
+    type: String,
+    default: 'Enter...'
+  },
+  itemLabel: {
+    type: [String, Number],
+    required: false,
+    default: null
+  },
+  itemValue: {
+    type: [String, Number],
+    required: false,
+    default: null
+  }
+})
+
+const inputValue = ref('')
+const focusInputValue = ref('')
+
+const selectedItems = ref([])
+const selectedTruthyItems = ref([])
+
+const focus = ref(false)
+
+const filteredList = computed(() => {
+  return props.list.filter((el) => {
+    return el.toLowerCase().includes(focusInputValue.value.toLowerCase())
+  })
+})
+
+function onSelect(item) {
+  const itemIndex = selectedItems.value.findIndex((el) => el === item)
+  if (itemIndex === -1) {
+    selectedItems.value.push(item)
+  } else {
+    selectedItems.value.splice(itemIndex, 1)
+  }
+}
+
+function showList() {
+  selectedItems.value = [...selectedTruthyItems.value]
+  focus.value = true
+}
+
+function hideList() {
+  selectedItems.value = []
+  focus.value = false
+}
+
+function acceptList() {
+  selectedTruthyItems.value = [...selectedItems.value]
+  focus.value = false
+}
+
+watch(
+  () => selectedTruthyItems.value,
+  (value) => {
+    inputValue.value = value.join(', ')
+  }
+)
+</script>
+
+<template>
+  <div class="autocomplete">
+    <input v-model="inputValue" class="autocomplete-input" :placeholder @focus="showList" />
+
+    <div v-show="focus" class="bg-effect" @click="hideList"></div>
+
+    <div v-show="focus" class="focus-wrapper">
+      <input v-model="focusInputValue" class="autocomplete-input" :placeholder />
+
+      <ul class="focus-list">
+        <li
+          class="list-item"
+          :class="{ selected: selectedItems.some((el) => el === item) }"
+          v-for="(item, idx) in filteredList"
+          :key="idx"
+          @click="onSelect(item)"
+        >
+          {{ item }}
+        </li>
+      </ul>
+
+      <div class="accept-wrapper">
+        <button class="accept-btn" @click="acceptList">Done</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-input {
+  border: 1px solid hsla(0, 0%, 11%, 0.2);
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.bg-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.focus-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  z-index: 100;
+  background-color: white;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.list-item {
+  cursor: pointer;
+  padding: 5px 10px;
+
+  &:not(:last-child) {
+    margin-bottom: 1px;
+  }
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+
+  &.selected {
+    background-color: #c8c8c8;
+  }
+}
+
+.accept-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid hsla(0, 0%, 11%, 0.2);
+}
+
+.accept-btn {
+  margin: 6px;
+  font-weight: 500;
+  border: 1px solid hsla(0, 0%, 11%, 0.2);
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: #ff7715;
+  color: white;
+
+  &:hover {
+  }
+}
+</style>
