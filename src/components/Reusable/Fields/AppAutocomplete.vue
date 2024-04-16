@@ -114,6 +114,7 @@ watch(
           v-for="(item, idx) in filteredList"
           :key="idx"
           @click="onSelect(item)"
+          :title="item"
         >
           {{ item }}
         </li>
@@ -164,6 +165,9 @@ watch(
 .list-item {
   cursor: pointer;
   padding: 3px 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
 
   &:not(:last-child) {
     margin-bottom: 1px;
