@@ -12,19 +12,36 @@ const roomSettings = ref([
 
 const showSettings = ref(false)
 
+const pr = new Intl.PluralRules('ru')
+const roomSuffixes = { one: 'room', few: 'rooms', many: 'rooms' }
+const adultSuffixes = { one: 'adult', few: 'adults', many: 'adults' }
+const childSuffixes = { one: 'child', few: 'children', many: 'children' }
+
 const rooms = computed(() => roomSettings.value.length)
 const adults = computed(() => {
   return roomSettings.value.reduce((acc, item) => {
-    return (acc.adults || acc) + item.adults
-  })
+    return acc + item.adults
+  }, 0)
+})
+const children = computed(() => {
+  const hasChildren = roomSettings.value.some((el) => el.children.length)
+  if (!hasChildren) return 0
+
+  return roomSettings.value.reduce((prev, el) => {
+    return prev + el.children.length
+  }, 0)
 })
 </script>
 
 <template>
   <div class="room-block">
     <div class="room-field" @click.stop="showSettings = true">
-      <span class="room-label">{{ rooms }} rooms for </span>
-      <span class="guests-label">{{ adults.adults || adults }} guests</span>
+      <span class="room-label">{{ rooms }} {{ roomSuffixes[pr.select(rooms)] }} for </span>
+      <span class="guests-label">
+        {{ adults }} {{ adultSuffixes[pr.select(adults)] }}
+        /
+        {{ children }} {{ childSuffixes[pr.select(children)] }}
+      </span>
     </div>
 
     <AppRoomSettings
@@ -47,7 +64,7 @@ const adults = computed(() => {
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 0 10px;
-  width: 100px;
+  max-width: 150px;
 }
 
 .room-label {
