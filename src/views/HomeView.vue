@@ -1,10 +1,16 @@
 <script setup>
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
+import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
 </script>
 
 <template>
-  <main :class="$style.wrapper">
-    <AppAutocomplete placeholder="Region" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+  <main>
+    <div :class="$style.wrapper">
+      <AppAutocomplete placeholder="Region" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+      <AppAutocomplete placeholder="City" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+      <AppAutocomplete placeholder="Hotel" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+      <AppRoomField />
+    </div>
   </main>
 </template>
 

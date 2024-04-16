@@ -114,6 +114,7 @@ watch(
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 10px;
+  width: 100%;
 }
 
 .bg-effect {
@@ -135,6 +136,7 @@ watch(
   background-color: white;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
+  width: 100%;
 }
 
 .list-item {
