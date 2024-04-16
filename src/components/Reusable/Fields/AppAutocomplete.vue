@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
+import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 
 defineOptions({
   inheritAttrs: false
@@ -33,8 +34,15 @@ const selectedItems = ref([])
 const selectedTruthyItems = ref([])
 
 const focus = ref(false)
+const onlySelected = ref(false)
 
 const filteredList = computed(() => {
+  if (onlySelected.value) {
+    return props.list.filter((el) => {
+      return selectedItems.value.find((item) => item === el)
+    })
+  }
+
   return props.list.filter((el) => {
     return el.toLowerCase().includes(focusInputValue.value.toLowerCase())
   })
@@ -88,7 +96,16 @@ watch(
     <div v-show="focus" class="bg-effect" @click="hideList"></div>
 
     <div v-show="focus" class="focus-wrapper">
-      <input v-model="focusInputValue" class="autocomplete-input" :placeholder="placeholder" />
+      <input
+        v-model="focusInputValue"
+        class="autocomplete-input"
+        :placeholder="placeholder"
+        :disabled="onlySelected"
+      />
+
+      <div class="only-selected">
+        <AppCheckbox v-model="onlySelected" position-label="right">Only selected</AppCheckbox>
+      </div>
 
       <ul class="focus-list">
         <li
@@ -146,7 +163,7 @@ watch(
 
 .list-item {
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 3px 10px;
 
   &:not(:last-child) {
     margin-bottom: 1px;
@@ -184,5 +201,11 @@ watch(
   padding: 5px 10px;
   background-color: #ff7715;
   color: white;
+}
+
+.only-selected {
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 0;
 }
 </style>
