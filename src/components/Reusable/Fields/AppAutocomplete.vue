@@ -64,6 +64,10 @@ function acceptList() {
   focus.value = false
 }
 
+function clearList() {
+  selectedItems.value = []
+}
+
 watch(
   () => selectedTruthyItems.value,
   (value) => {
@@ -99,6 +103,7 @@ watch(
       </ul>
 
       <div class="accept-wrapper">
+        <button class="clear-btn" @click="clearList">Clear</button>
         <button class="accept-btn" @click="acceptList">Done</button>
       </div>
     </div>
@@ -158,10 +163,19 @@ watch(
 
 .accept-wrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   border-top: 1px solid hsla(0, 0%, 11%, 0.2);
 }
 
+.clear-btn {
+  margin: 6px;
+  font-weight: 500;
+  border: 1px solid hsla(0, 0%, 11%, 0.2);
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: hsla(0, 0%, 11%, 0.4);
+  color: white;
+}
 .accept-btn {
   margin: 6px;
   font-weight: 500;
@@ -170,8 +184,5 @@ watch(
   padding: 5px 10px;
   background-color: #ff7715;
   color: white;
-
-  &:hover {
-  }
 }
 </style>
