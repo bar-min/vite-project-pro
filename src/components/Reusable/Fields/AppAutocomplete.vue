@@ -74,12 +74,17 @@ watch(
 
 <template>
   <div class="autocomplete">
-    <input v-model="inputValue" class="autocomplete-input" :placeholder @focus="showList" />
+    <input
+      v-model="inputValue"
+      class="autocomplete-input"
+      :placeholder="placeholder"
+      @focus="showList"
+    />
 
     <div v-show="focus" class="bg-effect" @click="hideList"></div>
 
     <div v-show="focus" class="focus-wrapper">
-      <input v-model="focusInputValue" class="autocomplete-input" :placeholder />
+      <input v-model="focusInputValue" class="autocomplete-input" :placeholder="placeholder" />
 
       <ul class="focus-list">
         <li
@@ -118,6 +123,7 @@ watch(
   bottom: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.3);
+  z-index: 100;
 }
 
 .focus-wrapper {
