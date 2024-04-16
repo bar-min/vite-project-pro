@@ -39,8 +39,11 @@ const children = computed(() => {
       <span class="room-label">{{ rooms }} {{ roomSuffixes[pr.select(rooms)] }} for </span>
       <span class="guests-label">
         {{ adults }} {{ adultSuffixes[pr.select(adults)] }}
-        /
-        {{ children }} {{ childSuffixes[pr.select(children)] }}
+
+        <template v-if="children">
+          /
+          {{ children }} {{ childSuffixes[pr.select(children)] }}
+        </template>
       </span>
     </div>
 
@@ -64,6 +67,7 @@ const children = computed(() => {
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 0 10px;
+  min-width: 100px;
   max-width: 150px;
 }
 

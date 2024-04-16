@@ -6,9 +6,9 @@ import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
 <template>
   <main>
     <div :class="$style.wrapper">
-      <AppAutocomplete placeholder="Region" :list="['Red', 'Orange', 'Green', 'Yellow']" />
-      <AppAutocomplete placeholder="City" :list="['Red', 'Orange', 'Green', 'Yellow']" />
-      <AppAutocomplete placeholder="Hotel" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+      <AppAutocomplete placeholder="Region (all)" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+      <AppAutocomplete placeholder="City (all)" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+      <AppAutocomplete placeholder="Hotel (all)" :list="['Red', 'Orange', 'Green', 'Yellow']" />
       <AppRoomField />
     </div>
   </main>
