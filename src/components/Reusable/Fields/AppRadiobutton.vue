@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  modelValue: { type: [Array, Boolean] },
-  value: { type: [Boolean, Object] },
+  modelValue: { type: [Array, Boolean, String] },
+  value: { type: [Boolean, Object, String] },
   positionLabel: {
     type: String,
     default: 'left'
@@ -23,14 +23,14 @@ const model = computed({
 </script>
 
 <template>
-  <label class="label-checkbox">
+  <label class="label-radio">
     <template v-if="positionLabel === 'right'">
       <slot />
     </template>
 
-    <input class="real-checkbox" type="checkbox" v-model="model" :value="value" />
+    <input class="real-radio" type="radio" v-model="model" :value="value" />
     <span
-      class="custom-checkbox"
+      class="custom-radio"
       :class="{ 'custom-checkbox-left': positionLabel === 'right' }"
     ></span>
 
@@ -41,11 +41,11 @@ const model = computed({
 </template>
 
 <style lang="scss" scoped>
-.label-checkbox {
+.label-radio {
   cursor: pointer;
 }
 
-.real-checkbox {
+.real-radio {
   width: 0;
   height: 0;
   opacity: 0;
@@ -53,38 +53,38 @@ const model = computed({
   z-index: -1;
 }
 
-.custom-checkbox {
+.custom-radio {
   position: relative;
   display: inline-block;
   width: 18px;
   height: 18px;
   background: #ffffff;
   border: 2px solid grey;
-  border-radius: 4px;
+  border-radius: 10px;
   vertical-align: sub;
   margin-right: 5px;
 }
 
-.custom-checkbox-left {
+.custom-radio-left {
   margin-left: 5px;
 }
 
-.custom-checkbox::before {
+.custom-radio::before {
   content: '';
   display: inline-block;
-  width: 13px;
-  height: 13px;
-  background-image: url('../../../assets/icons/common/check.svg');
+  width: 10px;
+  height: 10px;
+  background: #ff7715;
   background-size: contain;
   background-repeat: no-repeat;
   position: absolute;
   left: 50%;
   top: 50%;
+  border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
-  margin-top: 1px;
 }
 
-.real-checkbox:checked + .custom-checkbox::before {
+.real-radio:checked + .custom-radio::before {
   transform: translate(-50%, -50%) scale(1);
 }
 </style>

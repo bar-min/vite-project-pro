@@ -2,10 +2,6 @@
 import { ref, computed, watch } from 'vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 
-defineOptions({
-  inheritAttrs: false
-})
-
 const props = defineProps({
   list: {
     type: Array,
