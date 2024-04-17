@@ -6,7 +6,7 @@ const props = defineProps({
   value: { type: [Boolean, Object] },
   positionLabel: {
     type: String,
-    default: 'right'
+    default: 'left'
   }
 })
 
