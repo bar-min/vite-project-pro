@@ -18,46 +18,83 @@ const priceTo = ref(100000)
       <div class="home-container">
         <div class="first-filters">
           <AppAutocomplete
-            class="region-autocomplete"
+            class="region-filter"
             placeholder="Region (all)"
             :list="['Red', 'Orange', 'Green', 'Yellow']"
           />
           <AppAutocomplete
-            class="city-autocomplete"
+            class="city-filter"
             placeholder="City (all)"
             :list="['Red', 'Orange', 'Green', 'Yellow']"
           />
           <AppAutocomplete
-            class="hotel-autocomplete"
+            class="hotel-filter"
             placeholder="Hotel (all)"
             :list="['Red', 'Orange', 'Green', 'Yellow']"
           />
-          <AppCalendar />
-          <AppRoomField />
+
+          <!-- Only mobile -->
+          <AppAutocomplete
+            class="category-filter-mobile"
+            placeholder="Category (all)"
+            :list="['Red', 'Orange', 'Green', 'Yellow']"
+          />
+
+          <!-- Only mobile -->
+          <AppAutocomplete
+            class="meal-filter-mobile"
+            placeholder="Meal (all)"
+            :list="['Red', 'Orange', 'Green', 'Yellow']"
+          />
+
+          <AppCalendar class="datepicker-filter" />
+
+          <!-- Only desktop -->
+          <AppRoomField class="room-filter-desktop" />
         </div>
 
         <div class="second-filters">
-          <div class="second-filters-checkboxes">
+          <!-- Only mobile -->
+          <AppRoomField class="room-filter-mobile" />
+
+          <div class="checkboxes-filter">
             <AppCheckbox>Show available results only</AppCheckbox>
             <AppCheckbox>Remove stop sale results</AppCheckbox>
           </div>
 
-          <AppAutocomplete placeholder="Category" :list="['Red', 'Orange', 'Green', 'Yellow']" />
-          <AppAutocomplete placeholder="Meal" :list="['Red', 'Orange', 'Green', 'Yellow']" />
+          <!-- Only desktop -->
+          <AppAutocomplete
+            class="category-filter-desktop"
+            placeholder="Category (all)"
+            :list="['Red', 'Orange', 'Green', 'Yellow']"
+          />
 
-          <div class="second-filters-budget">
-            <span class="second-filters-budget__title"> Budget Hotel Price </span>
-            <div class="second-filters-radiobuttons">
+          <!-- Only desktop -->
+          <AppAutocomplete
+            class="meal-filter-desktop"
+            placeholder="Meal (all)"
+            :list="['Red', 'Orange', 'Green', 'Yellow']"
+          />
+
+          <div class="budget-filter">
+            <span class="budget-filter__title"> Budget Hotel Price </span>
+            <div class="budget-filter__radiobuttons">
               <AppRadiobutton v-model="budget" value="Net">Net</AppRadiobutton>
               <AppRadiobutton v-model="budget" value="Sell">Sell</AppRadiobutton>
             </div>
           </div>
 
-          <div class="second-filters-price">
-            <AppDigitalInput v-model="priceFrom" class="price-from-input" />
-            <AppDigitalInput v-model="priceTo" class="price-to-input" />
+          <div class="price-filter">
+            <AppDigitalInput v-model="priceFrom" class="price-filter__from" />
+            <AppDigitalInput v-model="priceTo" class="price-filter__to" />
           </div>
+
+          <!-- Only mobile -->
+          <button class="search-button-mobile">Search</button>
         </div>
+
+        <!-- Only desktop -->
+        <button class="search-button-desktop">Search</button>
       </div>
     </div>
   </main>
@@ -65,9 +102,9 @@ const priceTo = ref(100000)
 
 <style lang="scss" scoped>
 .home-wrapper {
-  max-width: 1200px;
+  max-width: 1120px;
   margin: 50px auto;
-  padding: 0 25px;
+  padding: 0 20px;
 }
 
 .home-container {
@@ -76,7 +113,19 @@ const priceTo = ref(100000)
   gap: 12px;
 }
 
-.first-filters,
+.first-filters {
+  display: flex;
+  gap: 12px;
+
+  & > div {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 1140px) {
+    flex-direction: column;
+  }
+}
+
 .second-filters {
   display: flex;
   gap: 12px;
@@ -84,19 +133,33 @@ const priceTo = ref(100000)
   & > div {
     flex-shrink: 0;
   }
+
+  @media (max-width: 1140px) {
+    flex-wrap: wrap;
+  }
 }
 
-.region-autocomplete {
+.datepicker-filter {
+  @media (max-width: 1140px) {
+    max-width: none;
+  }
+}
+
+.region-filter {
   flex-basis: 220px;
+
+  @media (max-width: 1140px) {
+    flex-basis: auto;
+  }
 }
 
-.second-filters-checkboxes {
+.checkboxes-filter {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.second-filters-budget {
+.budget-filter {
   display: flex;
   gap: 12px;
   margin: 0 20px;
@@ -104,23 +167,70 @@ const priceTo = ref(100000)
   &__title {
     font-weight: 600;
   }
+
+  &__radiobuttons {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
-.second-filters-radiobuttons {
-  display: flex;
-  flex-direction: column;
+.category-filter-desktop,
+.meal-filter-desktop,
+.room-filter-desktop {
+  @media (max-width: 1140px) {
+    display: none;
+  }
 }
 
-.second-filters-price {
+.category-filter-mobile,
+.meal-filter-mobile,
+.room-filter-mobile {
+  display: none;
+
+  @media (max-width: 1140px) {
+    display: block;
+  }
+}
+
+.price-filter {
+  flex-basis: 160px;
   display: flex;
   gap: 5px;
+
+  &__from {
+    flex-basis: 65px;
+  }
+
+  &__to {
+    flex-basis: 88px;
+  }
 }
 
-.price-from-input {
-  flex-basis: 65px;
+.search-button-desktop,
+.search-button-mobile {
+  display: flex;
+  margin: 0 5px 5px auto;
+  font-weight: 500;
+  border: 1px solid hsla(0, 0%, 11%, 0.2);
+  border-radius: 4px;
+  padding: 8px 55px;
+  font-weight: 600;
+  background-color: #ff7715;
+  color: white;
 }
 
-.price-to-input {
-  flex-basis: 85px;
+.search-button-desktop {
+  @media (max-width: 1140px) {
+    display: none;
+  }
+}
+
+.search-button-mobile {
+  display: none;
+  margin: 0;
+
+  @media (max-width: 1140px) {
+    display: block;
+  }
 }
 </style>

@@ -153,6 +153,8 @@ watch(
   padding: 10px;
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   width: 280px;
+  background: white;
+  z-index: 99;
 }
 
 .room-header {
