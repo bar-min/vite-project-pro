@@ -156,6 +156,10 @@ watch(
   width: 280px;
   background: white;
   z-index: 99;
+
+  @media (max-width: 1140px) {
+    left: 0;
+  }
 }
 
 .room-header {
