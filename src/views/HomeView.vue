@@ -25,14 +25,15 @@ const priceTo = ref(100000)
     <div class="home-wrapper">
       <div class="home-container">
         <div class="first-filters">
-          <AppSwitcher v-model="switchToMergedField" />
-
           <template v-if="!switchToMergedField">
-            <AppAutocomplete
-              class="region-filter"
-              placeholder="Region (all)"
-              :list="['Red', 'Orange', 'Green', 'Yellow']"
-            />
+            <div class="region-filter">
+              <AppSwitcher v-model="switchToMergedField" />
+              <AppAutocomplete
+                class="region-filter__field"
+                placeholder="Region (all)"
+                :list="['Red', 'Orange', 'Green', 'Yellow']"
+              />
+            </div>
 
             <AppAutocomplete
               class="city-filter"
@@ -48,11 +49,14 @@ const priceTo = ref(100000)
           </template>
 
           <template v-else>
-            <AppAutocomplete
-              class="merged-filter"
-              placeholder="Where are you going?"
-              :list="['Red', 'Orange', 'Green', 'Yellow']"
-            />
+            <div class="merged-filter">
+              <AppSwitcher v-model="switchToMergedField" />
+              <AppAutocomplete
+                class="merged-filter__field"
+                placeholder="Where are you going?"
+                :list="['Red', 'Orange', 'Green', 'Yellow']"
+              />
+            </div>
           </template>
 
           <!-- Only mobile -->
@@ -168,11 +172,25 @@ const priceTo = ref(100000)
 }
 
 .merged-filter {
+  display: flex;
   flex-grow: 1;
+  gap: 12px;
+
+  &__field {
+    flex-grow: 1;
+  }
 }
 
 .region-filter {
-  flex-basis: 190px;
+  display: flex;
+  gap: 12px;
+  flex-basis: 221px;
+
+  &__field {
+    @media (max-width: 1140px) {
+      flex-grow: 1;
+    }
+  }
 
   @media (max-width: 1140px) {
     flex-basis: auto;
