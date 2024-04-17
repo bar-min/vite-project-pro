@@ -67,8 +67,9 @@ const children = computed(() => {
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 0 10px;
-  min-width: 100px;
-  max-width: 150px;
+  width: 150px;
+  // min-width: 100px;
+  // max-width: 150px;
 }
 
 .room-label {

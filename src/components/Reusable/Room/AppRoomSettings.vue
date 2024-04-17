@@ -148,6 +148,7 @@ watch(
 
 <style lang="scss" scoped>
 .room-select {
+  position: absolute;
   margin-top: 6px;
   padding: 10px;
   border: 1px solid hsla(0, 0%, 11%, 0.2);
