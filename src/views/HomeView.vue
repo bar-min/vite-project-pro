@@ -6,6 +6,14 @@ import AppCalendar from '@/components/Reusable/Fields/AppCalendar.vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 import AppRadiobutton from '@/components/Reusable/Fields/AppRadiobutton.vue'
 import AppDigitalInput from '@/components/Reusable/Fields/AppDigitalInput.vue'
+import AppSwitcher from '@/components/Reusable/Fields/AppSwitcher.vue'
+
+const switchToMergedField = ref(false)
+const dates = ref([])
+const rooms = ref([])
+
+const showAvailableResults = ref(true)
+const removeStopSaleResults = ref(true)
 
 const budget = ref('Net')
 const priceFrom = ref(1)
@@ -17,21 +25,35 @@ const priceTo = ref(100000)
     <div class="home-wrapper">
       <div class="home-container">
         <div class="first-filters">
-          <AppAutocomplete
-            class="region-filter"
-            placeholder="Region (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
-          />
-          <AppAutocomplete
-            class="city-filter"
-            placeholder="City (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
-          />
-          <AppAutocomplete
-            class="hotel-filter"
-            placeholder="Hotel (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
-          />
+          <AppSwitcher v-model="switchToMergedField" />
+
+          <template v-if="!switchToMergedField">
+            <AppAutocomplete
+              class="region-filter"
+              placeholder="Region (all)"
+              :list="['Red', 'Orange', 'Green', 'Yellow']"
+            />
+
+            <AppAutocomplete
+              class="city-filter"
+              placeholder="City (all)"
+              :list="['Red', 'Orange', 'Green', 'Yellow']"
+            />
+
+            <AppAutocomplete
+              class="hotel-filter"
+              placeholder="Hotel (all)"
+              :list="['Red', 'Orange', 'Green', 'Yellow']"
+            />
+          </template>
+
+          <template v-else>
+            <AppAutocomplete
+              class="merged-filter"
+              placeholder="Where are you going?"
+              :list="['Red', 'Orange', 'Green', 'Yellow']"
+            />
+          </template>
 
           <!-- Only mobile -->
           <AppAutocomplete
@@ -47,19 +69,19 @@ const priceTo = ref(100000)
             :list="['Red', 'Orange', 'Green', 'Yellow']"
           />
 
-          <AppCalendar class="datepicker-filter" />
+          <AppCalendar v-model="dates" class="datepicker-filter" />
 
           <!-- Only desktop -->
-          <AppRoomField class="room-filter-desktop" />
+          <AppRoomField v-model="rooms" class="room-filter-desktop" />
         </div>
 
         <div class="second-filters">
           <!-- Only mobile -->
-          <AppRoomField class="room-filter-mobile" />
+          <AppRoomField v-model="rooms" class="room-filter-mobile" />
 
           <div class="checkboxes-filter">
-            <AppCheckbox>Show available results only</AppCheckbox>
-            <AppCheckbox>Remove stop sale results</AppCheckbox>
+            <AppCheckbox v-model="showAvailableResults">Show available results only</AppCheckbox>
+            <AppCheckbox v-model="removeStopSaleResults">Remove stop sale results</AppCheckbox>
           </div>
 
           <!-- Only desktop -->
@@ -145,8 +167,12 @@ const priceTo = ref(100000)
   }
 }
 
+.merged-filter {
+  flex-grow: 1;
+}
+
 .region-filter {
-  flex-basis: 220px;
+  flex-basis: 190px;
 
   @media (max-width: 1140px) {
     flex-basis: auto;

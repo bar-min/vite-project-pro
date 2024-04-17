@@ -1,10 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import AppRoomSettings from '@/components/Reusable/Room/AppRoomSettings.vue'
+
+const emit = defineEmits(['update:modelValue'])
 
 const roomSettings = ref([
   {
-    adults: 1,
+    adults: 2,
     children: [],
     showList: false
   }
@@ -31,6 +33,15 @@ const children = computed(() => {
     return prev + el.children.length
   }, 0)
 })
+
+watch(
+  () => roomSettings.value,
+  (value) => {
+    console.log('value', value)
+    emit('update:modelValue', value)
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <template>

@@ -1,7 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+
+const emit = defineEmits(['update:modelValue'])
 
 const date = ref()
 const datepicker = ref(null)
@@ -32,6 +34,13 @@ function clearValues() {
     datepicker.value.openMenu()
   }
 }
+
+watch(
+  () => date.value,
+  (value) => {
+    emit('update:modelValue', value)
+  }
+)
 </script>
 
 <template>
