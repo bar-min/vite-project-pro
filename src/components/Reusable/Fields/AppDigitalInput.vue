@@ -25,7 +25,7 @@ function checkDigit(event) {
 
 <template>
   <div>
-    <input class="digital-input" v-model.number="model" @keydown="checkDigit" />
+    <input class="digital-input" inputmode="numeric" v-model.number="model" @keydown="checkDigit" />
   </div>
 </template>
 

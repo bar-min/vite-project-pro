@@ -103,16 +103,18 @@ const priceTo = ref(100000)
           />
 
           <div class="budget-filter">
-            <span class="budget-filter__title"> Budget Hotel Price </span>
-            <div class="budget-filter__radiobuttons">
-              <AppRadiobutton v-model="budget" value="Net">Net</AppRadiobutton>
-              <AppRadiobutton v-model="budget" value="Sell">Sell</AppRadiobutton>
+            <div class="budget-filter__wrapper">
+              <span class="budget-filter__title"> Budget Hotel Price </span>
+              <div class="budget-filter__radiobuttons">
+                <AppRadiobutton v-model="budget" value="Net">Net</AppRadiobutton>
+                <AppRadiobutton v-model="budget" value="Sell">Sell</AppRadiobutton>
+              </div>
             </div>
-          </div>
 
-          <div class="price-filter">
-            <AppDigitalInput v-model="priceFrom" class="price-filter__from" />
-            <AppDigitalInput v-model="priceTo" class="price-filter__to" />
+            <div class="price-filter">
+              <AppDigitalInput v-model="priceFrom" class="price-filter__from" />
+              <AppDigitalInput v-model="priceTo" class="price-filter__to" />
+            </div>
           </div>
 
           <!-- Only mobile -->
@@ -206,7 +208,32 @@ const priceTo = ref(100000)
 .budget-filter {
   display: flex;
   gap: 12px;
-  margin: 0 20px;
+  flex-basis: 412px;
+
+  @media (max-width: 1140px) {
+    flex-basis: 370px;
+    max-width: 370px;
+  }
+
+  @media (max-width: 415px) {
+    flex-basis: 290px;
+  }
+
+  &__wrapper {
+    display: flex;
+    gap: 12px;
+    margin: 0 20px;
+    flex-shrink: 0;
+
+    @media (max-width: 1140px) {
+      margin: 0;
+    }
+
+    @media (max-width: 415px) {
+      flex-shrink: 1;
+      flex-basis: 300px;
+    }
+  }
 
   &__title {
     font-weight: 600;
@@ -215,6 +242,7 @@ const priceTo = ref(100000)
   &__radiobuttons {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
   }
 }
 
@@ -237,7 +265,6 @@ const priceTo = ref(100000)
 }
 
 .price-filter {
-  flex-basis: 160px;
   display: flex;
   gap: 5px;
 
@@ -258,6 +285,7 @@ const priceTo = ref(100000)
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 8px 55px;
+  max-height: 40px;
   font-weight: 600;
   background-color: #ff7715;
   color: white;
@@ -271,7 +299,6 @@ const priceTo = ref(100000)
 
 .search-button-mobile {
   display: none;
-  margin: 0;
 
   @media (max-width: 1140px) {
     display: block;
