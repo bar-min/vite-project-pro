@@ -48,7 +48,7 @@ watch(
   <div class="room-block">
     <div class="room-field" @click.stop="showSettings = true">
       <div class="room-angle">
-        <AppIcon name="angle" color="grey" @click="showList" />
+        <AppIcon name="angle" color="grey" />
       </div>
 
       <span class="room-label">{{ rooms }} {{ roomSuffixes[pr.select(rooms)] }} for </span>
