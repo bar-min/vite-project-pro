@@ -47,7 +47,7 @@ watch(
   () => props.name,
   () => {
     component.value = defineAsyncComponent(() => {
-      return import(`../assets/icons/${props.dir}/${props.name}.svg`)
+      return import(`../../assets/icons/${props.dir}/${props.name}.svg`)
     })
   },
   {
