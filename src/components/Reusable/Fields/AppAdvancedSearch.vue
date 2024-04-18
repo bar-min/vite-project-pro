@@ -43,7 +43,13 @@ const filters = ref([
 
 <template>
   <div class="advanced-search-wrapper">
-    <button class="advanced-search" @click.stop="showList = true">Advanced search</button>
+    <div class="advanced-search">
+      <button class="advanced-search-btn" @click.stop="showList = true">Advanced search</button>
+
+      <div class="advanced-search-angle" @click.stop="showList = true">
+        <AppIcon name="angle" color="grey" />
+      </div>
+    </div>
 
     <div class="advanced-filters" :class="{ active: showList }" ref="modal">
       <div class="advanced-filters-close" @click="showList = false">
@@ -59,12 +65,28 @@ const filters = ref([
   </div>
 </template>
 
+<style lang="scss">
+.advanced-search-angle {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  height: 20px;
+  width: 20px;
+  transform: translateY(-50%) rotate(270deg);
+}
+</style>
+
 <style lang="scss" scoped>
 .advanced-search {
+  position: relative;
+}
+
+.advanced-search-btn {
   cursor: pointer;
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
-  padding: 10px;
+  padding: 10px 25px 10px 10px;
   max-height: 40px;
   width: 100%;
 }

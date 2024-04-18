@@ -305,7 +305,7 @@ const priceTo = ref(100000)
 .advanced-search-filter,
 .hotels-availability-filter,
 .search-button-wrapper {
-  @media (max-width: 350px) {
+  @media (max-width: 556px) {
     width: 100%;
   }
 }

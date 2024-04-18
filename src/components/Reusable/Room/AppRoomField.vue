@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import AppRoomSettings from '@/components/Reusable/Room/AppRoomSettings.vue'
+import AppIcon from '../AppIcon.vue'
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -46,6 +47,10 @@ watch(
 <template>
   <div class="room-block">
     <div class="room-field" @click.stop="showSettings = true">
+      <div class="room-angle">
+        <AppIcon name="angle" color="grey" @click="showList" />
+      </div>
+
       <span class="room-label">{{ rooms }} {{ roomSuffixes[pr.select(rooms)] }} for </span>
       <span class="guests-label">
         {{ adults }} {{ adultSuffixes[pr.select(adults)] }}
@@ -76,12 +81,22 @@ watch(
   flex-direction: column;
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
-  padding: 0 10px;
+  padding: 0 25px 0 10px;
   width: 150px;
 
   @media (max-width: 1140px) {
     width: auto;
   }
+}
+
+.room-angle {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
 }
 
 .room-label {

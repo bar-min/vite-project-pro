@@ -153,6 +153,7 @@ watch(
   margin-top: 6px;
   padding: 10px;
   border: 1px solid hsla(0, 0%, 11%, 0.2);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
   width: 280px;
   background: white;
   z-index: 99;

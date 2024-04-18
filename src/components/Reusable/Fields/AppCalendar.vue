@@ -2,13 +2,14 @@
 import { ref, watch } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+import AppIcon from '../AppIcon.vue'
 
 const emit = defineEmits(['update:modelValue'])
 
 const date = ref()
 const datepicker = ref(null)
 
-function formatDate(date) {
+function formatDate(date, raw = false) {
   if (!date?.length) return
   const dates = date.map((el) => {
     const intl = new Intl.DateTimeFormat('en-US', {
@@ -17,6 +18,10 @@ function formatDate(date) {
 
     return intl.format(el)
   })
+
+  if (raw) {
+    return dates
+  }
 
   return dates.join(' - ')
 }
@@ -53,11 +58,18 @@ watch(
       multi-calendars
       placeholder="Select range"
       :enable-time-picker="false"
+      :clearable="false"
     >
       <template #action-row="{ selectDate, internalModelValue }">
         <p class="current-selection">
           {{ formatDate(internalModelValue) }} {{ getDiffDays(internalModelValue) }}
         </p>
+
+        <div class="current-selection-mobile" v-if="formatDate(internalModelValue, true)?.length">
+          <p>{{ formatDate(internalModelValue, true)[0] }} -</p>
+          <p>{{ formatDate(internalModelValue, true)[1] }}</p>
+          <span>{{ getDiffDays(internalModelValue) }}</span>
+        </div>
 
         <div class="action-buttons">
           <button class="clear-button" @click="clearValues">Clear</button>
@@ -65,12 +77,52 @@ watch(
         </div>
       </template>
     </VueDatePicker>
+
+    <div class="datepicker-angle" @click="datepicker.openMenu()">
+      <AppIcon name="angle" color="grey" />
+    </div>
   </div>
 </template>
 
 <style lang="scss">
 .datepicker {
+  position: relative;
   max-width: 300px;
+}
+
+.datepicker-angle {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+}
+
+.current-selection {
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+.current-selection-mobile {
+  display: none;
+  font-size: 12px;
+
+  @media (max-width: 600px) {
+    display: block;
+  }
+}
+
+.dp__menu {
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+}
+
+.dp__outer_menu_wrap {
+  @media (max-width: 415px) {
+    max-width: 270px;
+  }
 }
 
 .dp__month_year_wrap {
