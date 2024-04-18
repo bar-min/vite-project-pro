@@ -66,11 +66,7 @@ const filters = ref([
   border-radius: 4px;
   padding: 10px;
   max-height: 40px;
-
-  @media (max-width: 415px) {
-    max-height: none;
-    padding: 10px 5px;
-  }
+  width: 100%;
 }
 
 .advanced-filters {

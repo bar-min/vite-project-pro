@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
+import AppIcon from '../AppIcon.vue'
 
 const props = defineProps({
   list: {
@@ -105,6 +106,8 @@ watch(
       @focus="showList"
     />
 
+    <AppIcon class="autocomplete-angle" name="angle" color="grey" @click="showList" />
+
     <div v-show="focus" class="bg-effect" @click="hideList"></div>
 
     <div v-show="focus" class="focus-wrapper">
@@ -140,6 +143,16 @@ watch(
   </div>
 </template>
 
+<style lang="scss">
+.autocomplete-angle {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+}
+</style>
+
 <style lang="scss" scoped>
 .autocomplete {
   position: relative;
@@ -148,7 +161,7 @@ watch(
 .autocomplete-input {
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
-  padding: 10px;
+  padding: 10px 25px 10px 10px;
   width: 100%;
 }
 
@@ -222,6 +235,8 @@ watch(
 .only-selected {
   display: flex;
   justify-content: flex-end;
+  font-weight: 800;
   padding: 5px 0;
+  color: #ff7715;
 }
 </style>

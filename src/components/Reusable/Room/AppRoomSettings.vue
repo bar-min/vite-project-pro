@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import AppNumberInput from '@/components/Reusable/Fields/AppNumberInput.vue'
-import AppIcon from '@/components/AppIcon.vue'
+import AppIcon from '../AppIcon.vue'
 import { useClickOutside } from '@/composables/clickOutside'
 
 const props = defineProps({

@@ -78,8 +78,10 @@ watch(
   border-radius: 4px;
   padding: 0 10px;
   width: 150px;
-  // min-width: 100px;
-  // max-width: 150px;
+
+  @media (max-width: 1140px) {
+    width: auto;
+  }
 }
 
 .room-label {

@@ -7,6 +7,8 @@ import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 import AppRadiobutton from '@/components/Reusable/Fields/AppRadiobutton.vue'
 import AppDigitalInput from '@/components/Reusable/Fields/AppDigitalInput.vue'
 import AppSwitcher from '@/components/Reusable/Fields/AppSwitcher.vue'
+import AppAdvancedSearch from '@/components/Reusable/Fields/AppAdvancedSearch.vue'
+import AppHotelsAvailability from '@/components/Reusable/Fields/AppHotelsAvailability.vue'
 
 const switchToMergedField = ref(false)
 const dates = ref([])
@@ -61,14 +63,12 @@ const priceTo = ref(100000)
             </div>
           </template>
 
-          <!-- Only mobile -->
           <AppAutocomplete
             class="category-filter-mobile"
             placeholder="Category (all)"
             :list="['Red', 'Orange', 'Green', 'Yellow']"
           />
 
-          <!-- Only mobile -->
           <AppAutocomplete
             class="meal-filter-mobile"
             placeholder="Meal (all)"
@@ -77,27 +77,21 @@ const priceTo = ref(100000)
 
           <AppCalendar v-model="dates" class="datepicker-filter" />
 
-          <!-- Only desktop -->
           <AppRoomField v-model="rooms" class="room-filter-desktop" />
         </div>
 
         <div class="second-filters">
-          <!-- Only mobile -->
-          <AppRoomField v-model="rooms" class="room-filter-mobile" />
-
           <div class="checkboxes-filter">
             <AppCheckbox v-model="showAvailableResults">Show available results only</AppCheckbox>
             <AppCheckbox v-model="removeStopSaleResults">Remove stop sale results</AppCheckbox>
           </div>
 
-          <!-- Only desktop -->
           <AppAutocomplete
             class="category-filter-desktop"
             placeholder="Category (all)"
             :list="['Red', 'Orange', 'Green', 'Yellow']"
           />
 
-          <!-- Only desktop -->
           <AppAutocomplete
             class="meal-filter-desktop"
             placeholder="Meal (all)"
@@ -118,13 +112,15 @@ const priceTo = ref(100000)
               <AppDigitalInput v-model="priceTo" class="price-filter__to" />
             </div>
           </div>
-
-          <!-- Only mobile -->
-          <button class="search-button-mobile">Search</button>
         </div>
 
-        <!-- Only desktop -->
-        <button class="search-button-desktop">Search</button>
+        <div class="tertiary-filters">
+          <AppAdvancedSearch class="advanced-search-filter" />
+          <AppHotelsAvailability class="hotels-availability-filter" />
+          <div class="search-button-wrapper">
+            <button class="search-button">Search</button>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -132,7 +128,7 @@ const priceTo = ref(100000)
 
 <style lang="scss" scoped>
 .home-wrapper {
-  max-width: 1120px;
+  max-width: 1155px;
   margin: 50px auto;
   padding: 0 20px;
 }
@@ -167,6 +163,12 @@ const priceTo = ref(100000)
   @media (max-width: 1140px) {
     flex-wrap: wrap;
   }
+}
+
+.tertiary-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .datepicker-filter {
@@ -248,9 +250,13 @@ const priceTo = ref(100000)
   }
 }
 
-.category-filter-desktop,
 .meal-filter-desktop,
-.room-filter-desktop {
+.hotel-filter {
+  flex-grow: 1;
+}
+
+.category-filter-desktop,
+.meal-filter-desktop {
   @media (max-width: 1140px) {
     display: none;
   }
@@ -279,31 +285,28 @@ const priceTo = ref(100000)
   }
 }
 
-.search-button-desktop,
-.search-button-mobile {
-  display: flex;
-  margin: 0 5px 5px auto;
+.search-button {
   font-weight: 500;
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 8px 55px;
   max-height: 40px;
+  width: 100%;
   font-weight: 600;
   background-color: #ff7715;
   color: white;
 }
 
-.search-button-desktop {
-  @media (max-width: 1140px) {
-    display: none;
-  }
+.search-button-wrapper {
+  display: flex;
+  margin-left: auto;
 }
 
-.search-button-mobile {
-  display: none;
-
-  @media (max-width: 1140px) {
-    display: block;
+.advanced-search-filter,
+.hotels-availability-filter,
+.search-button-wrapper {
+  @media (max-width: 350px) {
+    width: 100%;
   }
 }
 </style>
