@@ -55,6 +55,8 @@ const priceTo = ref(100000)
                 class="merged-filter__field"
                 placeholder="Where are you going?"
                 :list="['Red', 'Orange', 'Green', 'Yellow']"
+                :show-select-only="false"
+                :multiple="false"
               />
             </div>
           </template>

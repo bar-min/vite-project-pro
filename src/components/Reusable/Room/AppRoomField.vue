@@ -37,7 +37,6 @@ const children = computed(() => {
 watch(
   () => roomSettings.value,
   (value) => {
-    console.log('value', value)
     emit('update:modelValue', value)
   },
   { deep: true, immediate: true }

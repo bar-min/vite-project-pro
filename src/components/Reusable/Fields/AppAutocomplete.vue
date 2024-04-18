@@ -20,6 +20,14 @@ const props = defineProps({
     type: [String, Number],
     required: false,
     default: null
+  },
+  showSelectOnly: {
+    type: Boolean,
+    default: true
+  },
+  multiple: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -46,10 +54,18 @@ const filteredList = computed(() => {
 
 function onSelect(item) {
   const itemIndex = selectedItems.value.findIndex((el) => el === item)
-  if (itemIndex === -1) {
-    selectedItems.value.push(item)
-  } else {
-    selectedItems.value.splice(itemIndex, 1)
+
+  if (!props.multiple) {
+    if (itemIndex === -1) {
+      if (selectedItems.value.length) return
+      selectedItems.value.push(item)
+    } else {
+      selectedItems.value.splice(itemIndex, 1)
+    }
+  }
+
+  if (props.multiple) {
+    itemIndex === -1 ? selectedItems.value.push(item) : selectedItems.value.splice(itemIndex, 1)
   }
 }
 
@@ -99,7 +115,7 @@ watch(
         :disabled="onlySelected"
       />
 
-      <div class="only-selected">
+      <div class="only-selected" v-if="showSelectOnly">
         <AppCheckbox v-model="onlySelected" position-label="right">Only selected</AppCheckbox>
       </div>
 
