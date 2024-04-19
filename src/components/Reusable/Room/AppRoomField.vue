@@ -82,9 +82,9 @@ watch(
   border: 1px solid hsla(0, 0%, 11%, 0.2);
   border-radius: 4px;
   padding: 0 25px 0 10px;
-  width: 162px;
+  width: 180px;
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     width: auto;
   }
 }

@@ -158,7 +158,7 @@ watch(
   background: white;
   z-index: 99;
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     left: 0;
   }
 }

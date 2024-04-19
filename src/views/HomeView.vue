@@ -128,7 +128,7 @@ const priceTo = ref(100000)
 
 <style lang="scss" scoped>
 .home-wrapper {
-  max-width: 1155px;
+  max-width: 1190px;
   margin: 50px auto;
   padding: 0 20px;
 }
@@ -147,7 +147,7 @@ const priceTo = ref(100000)
     flex-shrink: 0;
   }
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     flex-direction: column;
   }
 }
@@ -160,7 +160,7 @@ const priceTo = ref(100000)
     flex-shrink: 0;
   }
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     flex-wrap: wrap;
   }
 }
@@ -172,7 +172,7 @@ const priceTo = ref(100000)
 }
 
 .datepicker-filter {
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     max-width: none;
   }
 }
@@ -193,12 +193,12 @@ const priceTo = ref(100000)
   flex-basis: 221px;
 
   &__field {
-    @media (max-width: 1140px) {
+    @media (max-width: 1170px) {
       flex-grow: 1;
     }
   }
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     flex-basis: auto;
   }
 }
@@ -214,7 +214,7 @@ const priceTo = ref(100000)
   gap: 12px;
   flex-basis: 430px;
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     flex-basis: 370px;
     max-width: 370px;
   }
@@ -229,7 +229,7 @@ const priceTo = ref(100000)
     margin: 0 20px;
     flex-shrink: 0;
 
-    @media (max-width: 1140px) {
+    @media (max-width: 1170px) {
       margin: 0;
     }
 
@@ -257,7 +257,7 @@ const priceTo = ref(100000)
 
 .category-filter-desktop,
 .meal-filter-desktop {
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     display: none;
   }
 }
@@ -267,7 +267,7 @@ const priceTo = ref(100000)
 .room-filter-mobile {
   display: none;
 
-  @media (max-width: 1140px) {
+  @media (max-width: 1170px) {
     display: block;
   }
 }
@@ -277,11 +277,11 @@ const priceTo = ref(100000)
   gap: 5px;
 
   &__from {
-    flex-basis: 68px;
+    flex-basis: 65px;
   }
 
   &__to {
-    flex-basis: 95px;
+    flex-basis: 105px;
   }
 }
 
