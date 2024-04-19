@@ -212,7 +212,7 @@ const priceTo = ref(100000)
 .budget-filter {
   display: flex;
   gap: 12px;
-  flex-basis: 412px;
+  flex-basis: 430px;
 
   @media (max-width: 1140px) {
     flex-basis: 370px;
@@ -277,11 +277,11 @@ const priceTo = ref(100000)
   gap: 5px;
 
   &__from {
-    flex-basis: 65px;
+    flex-basis: 68px;
   }
 
   &__to {
-    flex-basis: 88px;
+    flex-basis: 95px;
   }
 }
 
