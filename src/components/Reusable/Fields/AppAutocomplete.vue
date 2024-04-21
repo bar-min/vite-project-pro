@@ -57,7 +57,7 @@ const filteredList = computed(() => {
     })
   }
 
-  return props.list
+  return [...props.list].sort((a, b) => a.name.localeCompare(b.name))
 })
 
 function onSelect(item) {
@@ -159,7 +159,7 @@ watch(
           class="list-item"
           :class="{ selected: onHoverSelected(item) }"
           v-for="(item, idx) in filteredList"
-          :key="idx"
+          :key="item.key || idx"
           @click="onSelect(item[itemValue] || item)"
           :title="item[itemLabel] || item"
         >
