@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
 import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
 import AppCalendar from '@/components/Reusable/Fields/AppCalendar.vue'
@@ -9,6 +9,13 @@ import AppDigitalInput from '@/components/Reusable/Fields/AppDigitalInput.vue'
 import AppSwitcher from '@/components/Reusable/Fields/AppSwitcher.vue'
 import AppAdvancedSearch from '@/components/Reusable/Fields/AppAdvancedSearch.vue'
 import AppHotelsAvailability from '@/components/Reusable/Fields/AppHotelsAvailability.vue'
+import {
+  getRegions,
+  getCities,
+  getHotels,
+  getCategories,
+  getMeals
+} from '@/common/services/filters.js'
 
 const switchToMergedField = ref(false)
 const dates = ref([])
@@ -20,6 +27,132 @@ const removeStopSaleResults = ref(true)
 const budget = ref('Net')
 const priceFrom = ref(1)
 const priceTo = ref(100000)
+
+const regions = ref([])
+const selectedRegions = ref([])
+const selectedRegionsKeys = ref([])
+
+const cities = ref([])
+const selectedCities = ref([])
+const selectedCitiesKeys = ref([])
+
+const hotels = ref([])
+const selectedHotels = ref([])
+
+const categories = ref([])
+const selectedCategories = ref([])
+const selectedCategoriesKeys = ref([])
+
+const meals = ref([])
+const selectedMeals = ref([])
+const selectedMealsKeys = ref([])
+
+const payload = ref({
+  regions: selectedRegionsKeys,
+  cities: selectedCitiesKeys,
+  categories: selectedCategoriesKeys,
+  meals: selectedMealsKeys
+})
+
+onMounted(async () => {
+  regions.value = await getRegions()
+  cities.value = await getCities()
+  hotels.value = await getHotels()
+  categories.value = await getCategories()
+  meals.value = await getMeals()
+})
+
+// Setters
+async function setCities() {
+  cities.value = await getCities(payload.value)
+  selectedCities.value = selectedCities.value.filter((el) => {
+    return cities.value.some((item) => item.key === el.key)
+  })
+  selectedCitiesKeys.value = selectedCities.value.map((el) => el.key)
+}
+
+async function setHotels() {
+  hotels.value = await getHotels(payload.value)
+  selectedHotels.value = selectedHotels.value.filter((el) => {
+    return hotels.value.some((item) => item.key === el.key)
+  })
+}
+
+async function setCategories() {
+  categories.value = await getCategories(payload.value)
+  selectedCategories.value = selectedCategories.value.filter((el) => {
+    return categories.value.some((item) => item.key === el.key)
+  })
+  selectedCategoriesKeys.value = selectedCategories.value.map((el) => el.key)
+}
+
+async function setMeals() {
+  meals.value = await getMeals(payload.value)
+  selectedMeals.value = selectedMeals.value.filter((el) => {
+    return meals.value.some((item) => item.key === el.key)
+  })
+  selectedMealsKeys.value = selectedMeals.value.map((el) => el.key)
+}
+
+// Regions
+async function selectRegions(value) {
+  selectedRegions.value = value
+  selectedRegionsKeys.value = value.map((el) => el.key)
+  await setCities()
+  await setHotels()
+  await setCategories()
+  await setMeals()
+}
+
+async function searchRegions(value) {
+  regions.value = await getRegions({ ...payload.value, term: value })
+}
+
+// Cities
+async function selectCities(value) {
+  selectedCities.value = value
+  selectedCitiesKeys.value = value.map((el) => el.key)
+  await setHotels()
+  await setCategories()
+  await setMeals()
+}
+
+async function searchCities(value) {
+  cities.value = await getCities({ ...payload.value, term: value })
+}
+
+// Hotels
+function selectHotels(value) {
+  selectedHotels.value = value
+}
+
+async function searchHotels(value) {
+  hotels.value = await getHotels({ ...payload.value, term: value })
+}
+
+// Categories
+async function selectCategories(value) {
+  selectedCategories.value = value
+  selectedCategoriesKeys.value = value = value.map((el) => el.key)
+  await setHotels()
+  await setMeals()
+}
+
+async function searchCategories(value) {
+  categories.value = await getCategories({ ...payload.value, term: value })
+}
+
+// Meals
+async function selectMeals(value) {
+  selectedMeals.value = value
+  selectedMealsKeys.value = value.map((el) => el.key)
+  await setHotels()
+  await setCategories()
+}
+
+async function searchMeals(value) {
+  meals.value = await getMeals({ ...payload.value, term: value })
+}
 </script>
 
 <template>
@@ -31,22 +164,34 @@ const priceTo = ref(100000)
             <div class="region-filter">
               <AppSwitcher v-model="switchToMergedField" />
               <AppAutocomplete
+                v-model="selectedRegions"
                 class="region-filter__field"
                 placeholder="Region (all)"
-                :list="['Red', 'Orange', 'Green', 'Yellow']"
+                :list="regions"
+                item-label="name"
+                @search="searchRegions"
+                @done="selectRegions"
               />
             </div>
 
             <AppAutocomplete
+              v-model="selectedCities"
               class="city-filter"
               placeholder="City (all)"
-              :list="['Red', 'Orange', 'Green', 'Yellow']"
+              :list="cities"
+              item-label="name"
+              @search="searchCities"
+              @done="selectCities"
             />
 
             <AppAutocomplete
+              v-model="selectedHotels"
               class="hotel-filter"
               placeholder="Hotel (all)"
-              :list="['Red', 'Orange', 'Green', 'Yellow']"
+              :list="hotels"
+              item-label="name"
+              @search="searchHotels"
+              @done="selectHotels"
             />
           </template>
 
@@ -66,13 +211,19 @@ const priceTo = ref(100000)
           <AppAutocomplete
             class="category-filter-mobile"
             placeholder="Category (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
+            :list="categories"
+            item-label="name"
+            @search="searchCategories"
+            @done="selectCategories"
           />
 
           <AppAutocomplete
             class="meal-filter-mobile"
             placeholder="Meal (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
+            :list="meals"
+            item-label="name"
+            @search="searchMeals"
+            @done="selectMeals"
           />
 
           <AppCalendar v-model="dates" class="datepicker-filter" />
@@ -87,15 +238,23 @@ const priceTo = ref(100000)
           </div>
 
           <AppAutocomplete
+            v-model="selectedCategories"
             class="category-filter-desktop"
             placeholder="Category (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
+            :list="categories"
+            item-label="name"
+            @search="searchCategories"
+            @done="selectCategories"
           />
 
           <AppAutocomplete
+            v-model="selectedMeals"
             class="meal-filter-desktop"
             placeholder="Meal (all)"
-            :list="['Red', 'Orange', 'Green', 'Yellow']"
+            :list="meals"
+            item-label="name"
+            @search="searchMeals"
+            @done="selectMeals"
           />
 
           <div class="budget-filter">
