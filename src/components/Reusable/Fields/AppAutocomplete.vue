@@ -3,7 +3,12 @@ import { ref, computed, watch } from 'vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 import AppIcon from '../AppIcon.vue'
 
+const emit = defineEmits(['search', 'update:modelValue', 'done'])
+
 const props = defineProps({
+  modelValue: {
+    type: Array
+  },
   list: {
     type: Array,
     required: true
@@ -36,7 +41,7 @@ const inputValue = ref('')
 const focusInputValue = ref('')
 
 const selectedItems = ref([])
-const selectedTruthyItems = ref([])
+const selectedTruthyItems = ref(props.modelValue)
 
 const focus = ref(false)
 const onlySelected = ref(false)
@@ -44,17 +49,21 @@ const onlySelected = ref(false)
 const filteredList = computed(() => {
   if (onlySelected.value) {
     return props.list.filter((el) => {
-      return selectedItems.value.find((item) => item === el)
+      if (props.itemLabel) {
+        return selectedItems.value.find((item) => item[props.itemLabel] === el[props.itemLabel])
+      } else {
+        return selectedItems.value.find((item) => item === el)
+      }
     })
   }
 
-  return props.list.filter((el) => {
-    return el.toLowerCase().includes(focusInputValue.value.toLowerCase())
-  })
+  return props.list
 })
 
 function onSelect(item) {
-  const itemIndex = selectedItems.value.findIndex((el) => el === item)
+  const itemIndex = selectedItems.value.findIndex((el) => {
+    return el[props.itemLabel] === item[props.itemLabel]
+  })
 
   if (!props.multiple) {
     if (itemIndex === -1) {
@@ -83,15 +92,36 @@ function hideList() {
 function acceptList() {
   selectedTruthyItems.value = [...selectedItems.value]
   focus.value = false
+  emit('done', selectedTruthyItems.value)
 }
 
 function clearList() {
   selectedItems.value = []
 }
 
+function onHoverSelected(item) {
+  return selectedItems.value.some((el) => {
+    if (props.itemLabel) {
+      return el[props.itemLabel] === item[props.itemLabel]
+    } else {
+      return el === item
+    }
+  })
+}
+
 watch(
-  () => selectedTruthyItems.value,
+  () => props.modelValue,
   (value) => {
+    emit('update:modelValue', value)
+    selectedTruthyItems.value = value
+    selectedItems.value = value
+
+    if (props.itemLabel) {
+      const labels = value.map((el) => el[props.itemLabel])
+      inputValue.value = labels.join(', ')
+      return
+    }
+
     inputValue.value = value.join(', ')
   }
 )
@@ -102,6 +132,7 @@ watch(
     <input
       v-model="inputValue"
       class="autocomplete-input"
+      :title="inputValue"
       :placeholder="placeholder"
       @focus="showList"
     />
@@ -116,6 +147,7 @@ watch(
         class="autocomplete-input"
         :placeholder="placeholder"
         :disabled="onlySelected"
+        @input="emit('search', focusInputValue)"
       />
 
       <div class="only-selected" v-if="showSelectOnly">
@@ -125,13 +157,13 @@ watch(
       <ul class="focus-list">
         <li
           class="list-item"
-          :class="{ selected: selectedItems.some((el) => el === item) }"
+          :class="{ selected: onHoverSelected(item) }"
           v-for="(item, idx) in filteredList"
           :key="idx"
-          @click="onSelect(item)"
-          :title="item"
+          @click="onSelect(item[itemValue] || item)"
+          :title="item[itemLabel] || item"
         >
-          {{ item }}
+          {{ item[itemLabel] || item }}
         </li>
       </ul>
 
@@ -163,6 +195,9 @@ watch(
   border-radius: 4px;
   padding: 10px 25px 10px 10px;
   width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
 }
 
 .bg-effect {
@@ -184,6 +219,11 @@ watch(
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
   width: 100%;
+}
+
+.focus-list {
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .list-item {
