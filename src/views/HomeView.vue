@@ -230,6 +230,7 @@ async function searchMeals(value) {
               placeholder="Hotel (all)"
               :list="hotels"
               item-label="fullName"
+              open-window-width="400px"
               @search="searchHotels"
               @done="selectHotels"
               @load-more="loadMoreHotels"

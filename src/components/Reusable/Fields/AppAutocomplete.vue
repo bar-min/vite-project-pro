@@ -39,6 +39,10 @@ const props = defineProps({
   inputOverflowCounter: {
     type: [Boolean, Number],
     default: 3
+  },
+  openWindowWidth: {
+    type: [Boolean, String],
+    default: '100%'
   }
 })
 
@@ -253,7 +257,11 @@ watch(
   background-color: white;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
-  width: 100%;
+  width: v-bind(openWindowWidth);
+
+  @media (max-width: 1170px) {
+    width: 100%;
+  }
 }
 
 .focus-list {
