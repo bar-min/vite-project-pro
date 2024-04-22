@@ -40,6 +40,12 @@ function clearValues() {
   }
 }
 
+function closePicker() {
+  if (datepicker.value) {
+    datepicker.value.selectDate()
+  }
+}
+
 watch(
   () => date.value,
   (value) => {
@@ -59,6 +65,7 @@ watch(
       placeholder="Select range"
       :enable-time-picker="false"
       :clearable="false"
+      @closed="closePicker"
     >
       <template #action-row="{ selectDate, internalModelValue }">
         <p class="current-selection">
