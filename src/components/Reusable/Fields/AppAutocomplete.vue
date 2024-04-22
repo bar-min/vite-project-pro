@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 import AppIcon from '../AppIcon.vue'
 
@@ -46,17 +46,22 @@ const props = defineProps({
   }
 })
 
+const observer = ref()
+const loading = ref(null)
+
 onMounted(() => {
-  focusList.value.addEventListener('scroll', checkPosition)
+  observer.value = new IntersectionObserver(([entry]) => {
+    if (entry && entry.isIntersecting) {
+      emit('load-more')
+    }
+  })
+
+  observer.value.observe(loading.value)
 })
 
-function checkPosition(e) {
-  const el = e.target
-
-  if (el.scrollTop + el.clientHeight > el.scrollHeight - 1) {
-    emit('load-more')
-  }
-}
+onUnmounted(() => {
+  observer.value.disconnect()
+})
 
 const inputValue = ref('')
 const focusInputValue = ref('')
@@ -204,6 +209,7 @@ watch(
         >
           {{ item[itemLabel] || item }}
         </li>
+        <div class="observer" ref="loading"></div>
       </ul>
 
       <div class="accept-wrapper">
@@ -320,5 +326,9 @@ watch(
   font-weight: 800;
   padding: 5px 0;
   color: #ff7715;
+}
+
+.observer {
+  height: 2px;
 }
 </style>
