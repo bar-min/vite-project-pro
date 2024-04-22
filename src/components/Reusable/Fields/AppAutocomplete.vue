@@ -179,6 +179,7 @@ watch(
       :title="inputValue"
       :placeholder="placeholder"
       @focus="showList"
+      readonly
     />
 
     <AppIcon class="autocomplete-angle" name="angle" color="grey" @click="showList" />
