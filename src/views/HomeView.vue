@@ -209,6 +209,7 @@ async function searchMeals(value) {
           </template>
 
           <AppAutocomplete
+            v-model="selectedCategories"
             class="category-filter-mobile"
             placeholder="Category (all)"
             :list="categories"
@@ -218,6 +219,7 @@ async function searchMeals(value) {
           />
 
           <AppAutocomplete
+            v-model="selectedMeals"
             class="meal-filter-mobile"
             placeholder="Meal (all)"
             :list="meals"
