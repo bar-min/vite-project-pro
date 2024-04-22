@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 import AppIcon from '../AppIcon.vue'
 
-const emit = defineEmits(['search', 'update:modelValue', 'done'])
+const emit = defineEmits(['search', 'update:modelValue', 'done', 'load-more'])
+const focusList = ref(null)
 
 const props = defineProps({
   modelValue: {
@@ -34,8 +35,24 @@ const props = defineProps({
   multiple: {
     type: Boolean,
     default: true
+  },
+  inputOverflowCounter: {
+    type: [Boolean, Number],
+    default: 3
   }
 })
+
+onMounted(() => {
+  focusList.value.addEventListener('scroll', checkPosition)
+})
+
+function checkPosition(e) {
+  const el = e.target
+
+  if (el.scrollTop + el.clientHeight > el.scrollHeight - 1) {
+    emit('load-more')
+  }
+}
 
 const inputValue = ref('')
 const focusInputValue = ref('')
@@ -48,22 +65,28 @@ const onlySelected = ref(false)
 
 const filteredList = computed(() => {
   if (onlySelected.value) {
-    return props.list.filter((el) => {
-      if (props.itemLabel) {
-        return selectedItems.value.find((item) => item[props.itemLabel] === el[props.itemLabel])
-      } else {
-        return selectedItems.value.find((item) => item === el)
-      }
-    })
+    return selectedItems.value
   }
 
-  return [...props.list].sort((a, b) => a.name.localeCompare(b.name))
+  if (props.itemLabel) {
+    return [...props.list].sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  return props.list
 })
 
 function onSelect(item) {
-  const itemIndex = selectedItems.value.findIndex((el) => {
-    return el[props.itemLabel] === item[props.itemLabel]
-  })
+  let itemIndex = -1
+
+  if (props.itemLabel) {
+    itemIndex = selectedItems.value.findIndex((el) => {
+      return el[props.itemLabel] === item[props.itemLabel]
+    })
+  } else {
+    itemIndex = selectedItems.value.findIndex((el) => {
+      return el === item
+    })
+  }
 
   if (!props.multiple) {
     if (itemIndex === -1) {
@@ -85,8 +108,7 @@ function showList() {
 }
 
 function hideList() {
-  selectedItems.value = []
-  focus.value = false
+  acceptList()
 }
 
 function acceptList() {
@@ -125,6 +147,19 @@ watch(
     inputValue.value = value.join(', ')
   }
 )
+
+watch(
+  () => inputValue.value,
+  (value) => {
+    if (props.inputOverflowCounter) {
+      const labels = value.split(', ')
+
+      if (labels.length >= props.inputOverflowCounter) {
+        inputValue.value = `Selected ${labels.length}`
+      }
+    }
+  }
+)
 </script>
 
 <template>
@@ -154,12 +189,12 @@ watch(
         <AppCheckbox v-model="onlySelected" position-label="right">Only selected</AppCheckbox>
       </div>
 
-      <ul class="focus-list">
+      <ul class="focus-list" ref="focusList">
         <li
           class="list-item"
           :class="{ selected: onHoverSelected(item) }"
           v-for="(item, idx) in filteredList"
-          :key="item.key || idx"
+          :key="idx"
           @click="onSelect(item[itemValue] || item)"
           :title="item[itemLabel] || item"
         >
