@@ -18,6 +18,7 @@ import {
 } from '@/common/services/filters.js'
 
 const switchToMergedField = ref(false)
+const mergedField = ref([])
 const dates = ref([])
 const rooms = ref([])
 
@@ -37,6 +38,11 @@ const selectedCities = ref([])
 const selectedCitiesKeys = ref([])
 
 const hotels = ref([])
+const hotelsTerm = ref('')
+const hotelsPaging = ref({
+  number: 1,
+  size: 100
+})
 const selectedHotels = ref([])
 
 const categories = ref([])
@@ -61,6 +67,15 @@ onMounted(async () => {
   categories.value = await getCategories()
   meals.value = await getMeals()
 })
+
+function clearHotelPaging() {
+  const originPaging = {
+    number: 1,
+    size: 100
+  }
+
+  hotelsPaging.value = { ...originPaging }
+}
 
 // Setters
 async function setCities() {
@@ -98,6 +113,9 @@ async function setMeals() {
 async function selectRegions(value) {
   selectedRegions.value = value
   selectedRegionsKeys.value = value.map((el) => el.key)
+
+  clearHotelPaging()
+
   await setCities()
   await setHotels()
   await setCategories()
@@ -112,6 +130,9 @@ async function searchRegions(value) {
 async function selectCities(value) {
   selectedCities.value = value
   selectedCitiesKeys.value = value.map((el) => el.key)
+
+  clearHotelPaging()
+
   await setHotels()
   await setCategories()
   await setMeals()
@@ -127,13 +148,29 @@ function selectHotels(value) {
 }
 
 async function searchHotels(value) {
-  hotels.value = await getHotels({ ...payload.value, term: value })
+  clearHotelPaging()
+  hotelsTerm.value = value
+  hotels.value = await getHotels({ ...payload.value, term: hotelsTerm.value })
+}
+
+async function loadMoreHotels() {
+  const page = hotelsPaging.value.size / 10
+  hotelsPaging.value.number += page
+  const data = await getHotels({
+    ...payload.value,
+    paging: hotelsPaging.value,
+    term: hotelsTerm.value
+  })
+  hotels.value = hotels.value.concat(data)
 }
 
 // Categories
 async function selectCategories(value) {
   selectedCategories.value = value
   selectedCategoriesKeys.value = value = value.map((el) => el.key)
+
+  clearHotelPaging()
+
   await setHotels()
   await setMeals()
 }
@@ -146,6 +183,9 @@ async function searchCategories(value) {
 async function selectMeals(value) {
   selectedMeals.value = value
   selectedMealsKeys.value = value.map((el) => el.key)
+
+  clearHotelPaging()
+
   await setHotels()
   await setCategories()
 }
@@ -189,9 +229,10 @@ async function searchMeals(value) {
               class="hotel-filter"
               placeholder="Hotel (all)"
               :list="hotels"
-              item-label="name"
+              item-label="fullName"
               @search="searchHotels"
               @done="selectHotels"
+              @load-more="loadMoreHotels"
             />
           </template>
 
@@ -199,6 +240,7 @@ async function searchMeals(value) {
             <div class="merged-filter">
               <AppSwitcher v-model="switchToMergedField" />
               <AppAutocomplete
+                v-model="mergedField"
                 class="merged-filter__field"
                 placeholder="Where are you going?"
                 :list="['Red', 'Orange', 'Green', 'Yellow']"
@@ -213,6 +255,7 @@ async function searchMeals(value) {
             class="category-filter-mobile"
             placeholder="Category (all)"
             :list="categories"
+            :input-overflow-counter="6"
             item-label="name"
             @search="searchCategories"
             @done="selectCategories"
@@ -245,6 +288,7 @@ async function searchMeals(value) {
             placeholder="Category (all)"
             :list="categories"
             item-label="name"
+            :input-overflow-counter="6"
             @search="searchCategories"
             @done="selectCategories"
           />
