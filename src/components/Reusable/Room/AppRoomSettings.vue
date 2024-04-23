@@ -52,6 +52,7 @@ function removeRoom(idx) {
 
 function onSelectChild(idx, age) {
   rooms.value[idx].children.push(age)
+  onBlur(idx)
 }
 
 function onRemoveChild(idx, childIdx) {
@@ -120,7 +121,6 @@ watch(
                       v-for="age in childAges"
                       :key="age"
                       class="child-select-item"
-                      :class="{ selected: room.children.some((el) => el === age) }"
                       @click="onSelectChild(idx, age)"
                     >
                       {{ age }}
