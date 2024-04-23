@@ -16,7 +16,6 @@ export async function getCities(payload = { term: '', paging: null }) {
 
 export async function getHotels(payload = { term: '', paging: null }) {
   payload.term = payload.term ?? ''
-  payload.paging = payload.paging ?? { number: 1, size: 100 }
 
   const { data } = await http.post('/gds/filter/hotels', payload)
 

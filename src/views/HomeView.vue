@@ -63,7 +63,7 @@ const payload = ref({
 onMounted(async () => {
   regions.value = await getRegions()
   cities.value = await getCities()
-  hotels.value = await getHotels()
+  hotels.value = await getHotels({ paging: hotelsPaging.value })
   categories.value = await getCategories()
   meals.value = await getMeals()
 })
@@ -87,7 +87,7 @@ async function setCities() {
 }
 
 async function setHotels() {
-  hotels.value = await getHotels(payload.value)
+  hotels.value = await getHotels({ ...payload.value, paging: hotelsPaging.value })
   selectedHotels.value = selectedHotels.value.filter((el) => {
     return hotels.value.some((item) => item.key === el.key)
   })
@@ -150,7 +150,11 @@ function selectHotels(value) {
 async function searchHotels(value) {
   clearHotelPaging()
   hotelsTerm.value = value
-  hotels.value = await getHotels({ ...payload.value, term: hotelsTerm.value })
+  hotels.value = await getHotels({
+    ...payload.value,
+    paging: hotelsPaging.value,
+    term: hotelsTerm.value
+  })
 }
 
 async function loadMoreHotels() {
