@@ -20,6 +20,7 @@ import {
 const switchToMergedField = ref(false)
 const mergedField = ref([])
 const dates = ref([])
+const datesRange = ref([])
 const rooms = ref([])
 
 const showAvailableResults = ref(true)
@@ -63,7 +64,9 @@ const payload = ref({
 onMounted(async () => {
   regions.value = await getRegions()
   cities.value = await getCities()
-  hotels.value = await getHotels({ paging: hotelsPaging.value })
+  const { hotels: hotelsData, dates: datesData } = await getHotels({ paging: hotelsPaging.value })
+  hotels.value = hotelsData
+  datesRange.value = datesData
   categories.value = await getCategories()
   meals.value = await getMeals()
 })
@@ -87,7 +90,12 @@ async function setCities() {
 }
 
 async function setHotels() {
-  hotels.value = await getHotels({ ...payload.value, paging: hotelsPaging.value })
+  const { hotels: hotelsData, dates: datesData } = await getHotels({
+    ...payload.value,
+    paging: hotelsPaging.value
+  })
+  hotels.value = hotelsData
+  datesRange.value = datesData
   selectedHotels.value = selectedHotels.value.filter((el) => {
     return hotels.value.some((item) => item.key === el.key)
   })
@@ -150,22 +158,25 @@ function selectHotels(value) {
 async function searchHotels(value) {
   clearHotelPaging()
   hotelsTerm.value = value
-  hotels.value = await getHotels({
+  const { hotels: hotelsData, dates: datesData } = await getHotels({
     ...payload.value,
     paging: hotelsPaging.value,
     term: hotelsTerm.value
   })
+  hotels.value = hotelsData
+  datesRange.value = datesData
 }
 
 async function loadMoreHotels() {
   const page = hotelsPaging.value.size / 10
   hotelsPaging.value.number += page
-  const data = await getHotels({
+  const { hotels: hotelsData, dates: datesData } = await getHotels({
     ...payload.value,
     paging: hotelsPaging.value,
     term: hotelsTerm.value
   })
-  hotels.value = hotels.value.concat(data)
+  datesRange.value = datesData
+  hotels.value = hotels.value.concat(hotelsData)
 }
 
 // Categories

@@ -78,7 +78,7 @@ const filteredList = computed(() => {
   }
 
   if (props.itemLabel) {
-    return [...props.list].sort((a, b) => a.name.localeCompare(b.name))
+    return [...props.list].sort((a, b) => a[props.itemLabel].localeCompare(b[props.itemLabel]))
   }
 
   return props.list
