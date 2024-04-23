@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
 import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
 import AppCalendar from '@/components/Reusable/Fields/AppCalendar.vue'
@@ -23,7 +23,7 @@ const dates = ref([])
 const rooms = ref([])
 
 const showAvailableResults = ref(true)
-const removeStopSaleResults = ref(true)
+const removeStopSaleResults = ref(false)
 
 const budget = ref('Net')
 const priceFrom = ref(1)
@@ -197,6 +197,24 @@ async function selectMeals(value) {
 async function searchMeals(value) {
   meals.value = await getMeals({ ...payload.value, term: value })
 }
+
+watch(
+  () => showAvailableResults.value,
+  (value) => {
+    if (value) {
+      removeStopSaleResults.value = false
+    }
+  }
+)
+
+watch(
+  () => removeStopSaleResults.value,
+  (value) => {
+    if (value) {
+      showAvailableResults.value = false
+    }
+  }
+)
 </script>
 
 <template>
