@@ -51,12 +51,7 @@ function removeRoom(idx) {
 }
 
 function onSelectChild(idx, age) {
-  const itemIndex = rooms.value[idx].children.findIndex((el) => el === age)
-  if (itemIndex === -1) {
-    rooms.value[idx].children.push(age)
-  } else {
-    rooms.value[idx].children.splice(itemIndex, 1)
-  }
+  rooms.value[idx].children.push(age)
 }
 
 function onRemoveChild(idx, childIdx) {
