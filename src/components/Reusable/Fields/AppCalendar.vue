@@ -1,12 +1,31 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import AppIcon from '../AppIcon.vue'
 
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    required: true
+  },
+  datesRange: {
+    type: Object,
+    default: () => {}
+  }
+})
+
 const emit = defineEmits(['update:modelValue'])
 
-const date = ref()
+const date = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
+
 const datepicker = ref(null)
 
 function formatDate(date, raw = false) {
@@ -45,13 +64,6 @@ function closePicker() {
     datepicker.value.selectDate()
   }
 }
-
-watch(
-  () => date.value,
-  (value) => {
-    emit('update:modelValue', value)
-  }
-)
 </script>
 
 <template>
@@ -62,8 +74,14 @@ watch(
       v-model="date"
       range
       multi-calendars
+      :start-date="datesRange.from"
+      :min-date="datesRange.from"
+      :max-date="datesRange.to"
+      :hide-offset-dates="true"
       placeholder="Select range"
+      month-name-format="long"
       :enable-time-picker="false"
+      :prevent-min-max-navigation="true"
       :clearable="false"
       @closed="closePicker"
     >
@@ -134,10 +152,6 @@ watch(
 
 .dp__month_year_wrap {
   justify-content: center;
-}
-
-.dp__month_year_select {
-  width: 30%;
 }
 
 .action-row {

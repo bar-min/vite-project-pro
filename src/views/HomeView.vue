@@ -80,6 +80,18 @@ function clearHotelPaging() {
   hotelsPaging.value = { ...originPaging }
 }
 
+function checkDates() {
+  const isDateIncluded = dates.value.every((el) => {
+    return (
+      new Date(el) > new Date(datesRange.value.from) && new Date(el) < new Date(datesRange.value.to)
+    )
+  })
+
+  if (!isDateIncluded) {
+    dates.value = []
+  }
+}
+
 // Setters
 async function setCities() {
   cities.value = await getCities(payload.value)
@@ -123,11 +135,11 @@ async function selectRegions(value) {
   selectedRegionsKeys.value = value.map((el) => el.key)
 
   clearHotelPaging()
-
   await setCities()
   await setHotels()
   await setCategories()
   await setMeals()
+  checkDates()
 }
 
 async function searchRegions(value) {
@@ -140,10 +152,10 @@ async function selectCities(value) {
   selectedCitiesKeys.value = value.map((el) => el.key)
 
   clearHotelPaging()
-
   await setHotels()
   await setCategories()
   await setMeals()
+  checkDates()
 }
 
 async function searchCities(value) {
@@ -185,9 +197,9 @@ async function selectCategories(value) {
   selectedCategoriesKeys.value = value = value.map((el) => el.key)
 
   clearHotelPaging()
-
   await setHotels()
   await setMeals()
+  checkDates()
 }
 
 async function searchCategories(value) {
@@ -200,9 +212,9 @@ async function selectMeals(value) {
   selectedMealsKeys.value = value.map((el) => el.key)
 
   clearHotelPaging()
-
   await setHotels()
   await setCategories()
+  checkDates()
 }
 
 async function searchMeals(value) {
@@ -305,7 +317,7 @@ watch(
             @done="selectMeals"
           />
 
-          <AppCalendar v-model="dates" class="datepicker-filter" />
+          <AppCalendar v-model="dates" :dates-range="datesRange" class="datepicker-filter" />
 
           <AppRoomField v-model="rooms" class="room-filter-desktop" />
         </div>
