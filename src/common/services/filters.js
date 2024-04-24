@@ -35,3 +35,10 @@ export async function getMeals(payload = { term: '', paging: null }) {
 
   return data
 }
+
+export async function getContextItems(payload = { term: '', paging: null }) {
+  payload.term = payload.term ?? ''
+  const { data } = await http.post('/gds/filter/context', payload)
+
+  return data
+}

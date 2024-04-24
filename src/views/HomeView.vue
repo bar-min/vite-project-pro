@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
+import AppContextAutocomplete from '@/components/Reusable/Fields/AppContextAutocomplete.vue'
 import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
 import AppCalendar from '@/components/Reusable/Fields/AppCalendar.vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
@@ -14,11 +15,15 @@ import {
   getCities,
   getHotels,
   getCategories,
-  getMeals
+  getMeals,
+  getContextItems
 } from '@/common/services/filters.js'
 
-const switchToMergedField = ref(false)
+const switchToMergedField = ref(true)
 const mergedField = ref([])
+const mergedFieldKeys = ref([])
+const mergedFieldList = ref([])
+
 const dates = ref([])
 const datesRange = ref([])
 const rooms = ref([])
@@ -45,6 +50,7 @@ const hotelsPaging = ref({
   size: 100
 })
 const selectedHotels = ref([])
+const selectedHotelsKeys = ref([])
 
 const categories = ref([])
 const selectedCategories = ref([])
@@ -57,6 +63,7 @@ const selectedMealsKeys = ref([])
 const payload = ref({
   regions: selectedRegionsKeys,
   cities: selectedCitiesKeys,
+  hotels: selectedHotelsKeys,
   categories: selectedCategoriesKeys,
   meals: selectedMealsKeys
 })
@@ -69,6 +76,7 @@ onMounted(async () => {
   datesRange.value = datesData
   categories.value = await getCategories()
   meals.value = await getMeals()
+  mergedFieldList.value = await getContextItems()
 })
 
 function clearHotelPaging() {
@@ -221,6 +229,42 @@ async function searchMeals(value) {
   meals.value = await getMeals({ ...payload.value, term: value })
 }
 
+async function selectContextItem(value) {
+  mergedField.value = value
+  mergedFieldKeys.value = value.map((el) => el.key)
+
+  const [selectedItem] = value
+
+  if (!selectedItem) return
+
+  if (selectedItem.type === 'region') {
+    selectedCitiesKeys.value = []
+    selectedHotelsKeys.value = []
+    selectedRegionsKeys.value = value.map((el) => el.key)
+  }
+
+  if (selectedItem.type === 'city') {
+    selectedRegionsKeys.value = []
+    selectedHotelsKeys.value = []
+    selectedCitiesKeys.value = value.map((el) => el.key)
+  }
+
+  if (!selectedItem.type) {
+    selectedRegionsKeys.value = []
+    selectedCitiesKeys.value = []
+    selectedHotelsKeys.value = value.map((el) => el.key)
+  }
+
+  await setHotels()
+  await setCategories()
+  await setMeals()
+  checkDates()
+}
+
+async function searchContextItems(value) {
+  mergedFieldList.value = await getContextItems({ term: value })
+}
+
 watch(
   () => showAvailableResults.value,
   (value) => {
@@ -235,6 +279,30 @@ watch(
   (value) => {
     if (value) {
       showAvailableResults.value = false
+    }
+  }
+)
+
+watch(
+  () => switchToMergedField.value,
+  async (value) => {
+    selectedRegionsKeys.value = []
+    selectedCitiesKeys.value = []
+    selectedHotelsKeys.value = []
+    selectedCategoriesKeys.value = []
+    selectedMealsKeys.value = []
+
+    if (value) {
+      mergedField.value = []
+    }
+
+    if (!value) {
+      selectedHotels.value = []
+      selectedCategories.value = []
+      selectedMeals.value = []
+      await setHotels()
+      await setCategories()
+      await setMeals()
     }
   }
 )
@@ -285,13 +353,16 @@ watch(
           <template v-else>
             <div class="merged-filter">
               <AppSwitcher v-model="switchToMergedField" />
-              <AppAutocomplete
+              <AppContextAutocomplete
                 v-model="mergedField"
                 class="merged-filter__field"
                 placeholder="Where are you going?"
-                :list="['Red', 'Orange', 'Green', 'Yellow']"
+                item-label="name"
+                :list="mergedFieldList"
                 :show-select-only="false"
                 :multiple="false"
+                @search="searchContextItems"
+                @done="selectContextItem"
               />
             </div>
           </template>
