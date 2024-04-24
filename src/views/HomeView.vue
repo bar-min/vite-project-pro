@@ -19,7 +19,7 @@ import {
   getContextItems
 } from '@/common/services/filters.js'
 
-const switchToMergedField = ref(true)
+const switchToMergedField = ref(false)
 const mergedField = ref([])
 const mergedFieldKeys = ref([])
 const mergedFieldList = ref([])
