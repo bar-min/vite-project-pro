@@ -21,7 +21,6 @@ import {
 
 const switchToMergedField = ref(false)
 const mergedField = ref([])
-const mergedFieldKeys = ref([])
 const mergedFieldList = ref([])
 
 const dates = ref([])
@@ -119,6 +118,7 @@ async function setHotels() {
   selectedHotels.value = selectedHotels.value.filter((el) => {
     return hotels.value.some((item) => item.key === el.key)
   })
+  checkDates()
 }
 
 async function setCategories() {
@@ -147,7 +147,6 @@ async function selectRegions(value) {
   await setHotels()
   await setCategories()
   await setMeals()
-  checkDates()
 }
 
 async function searchRegions(value) {
@@ -163,7 +162,6 @@ async function selectCities(value) {
   await setHotels()
   await setCategories()
   await setMeals()
-  checkDates()
 }
 
 async function searchCities(value) {
@@ -207,7 +205,6 @@ async function selectCategories(value) {
   clearHotelPaging()
   await setHotels()
   await setMeals()
-  checkDates()
 }
 
 async function searchCategories(value) {
@@ -222,7 +219,6 @@ async function selectMeals(value) {
   clearHotelPaging()
   await setHotels()
   await setCategories()
-  checkDates()
 }
 
 async function searchMeals(value) {
@@ -231,7 +227,6 @@ async function searchMeals(value) {
 
 async function selectContextItem(value) {
   mergedField.value = value
-  mergedFieldKeys.value = value.map((el) => el.key)
 
   const [selectedItem] = value
 
@@ -258,7 +253,6 @@ async function selectContextItem(value) {
   await setHotels()
   await setCategories()
   await setMeals()
-  checkDates()
 }
 
 async function searchContextItems(value) {
@@ -294,6 +288,11 @@ watch(
 
     if (value) {
       mergedField.value = []
+      selectedCategories.value = []
+      selectedMeals.value = []
+      await setHotels()
+      await setCategories()
+      await setMeals()
     }
 
     if (!value) {
@@ -599,7 +598,7 @@ watch(
   gap: 5px;
 
   &__from {
-    flex-basis: 65px;
+    flex-basis: 80px;
   }
 
   &__to {
