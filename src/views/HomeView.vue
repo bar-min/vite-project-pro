@@ -78,6 +78,7 @@ onMounted(async () => {
   mergedFieldList.value = await getContextItems()
 })
 
+// Helpers
 function clearHotelPaging() {
   const originPaging = {
     number: 1,
@@ -225,6 +226,7 @@ async function searchMeals(value) {
   meals.value = await getMeals({ ...payload.value, term: value })
 }
 
+// Context
 async function selectContextItem(value) {
   mergedField.value = value
 
@@ -300,19 +302,17 @@ watch(
       mergedField.value = []
       selectedCategories.value = []
       selectedMeals.value = []
-      await setHotels()
-      await setCategories()
-      await setMeals()
     }
 
     if (!value) {
       selectedHotels.value = []
       selectedCategories.value = []
       selectedMeals.value = []
-      await setHotels()
-      await setCategories()
-      await setMeals()
     }
+
+    await setHotels()
+    await setCategories()
+    await setMeals()
   }
 )
 </script>
