@@ -159,12 +159,12 @@ watch(
 
 watch(
   () => inputValue.value,
-  (value) => {
+  () => {
     if (props.inputOverflowCounter) {
-      const labels = value.split(', ')
+      const selectedItemsLength = selectedTruthyItems.value.length
 
-      if (labels.length >= props.inputOverflowCounter) {
-        inputValue.value = `Selected ${labels.length}`
+      if (selectedItemsLength >= props.inputOverflowCounter) {
+        inputValue.value = `Selected ${selectedItemsLength}`
       }
     }
   }
