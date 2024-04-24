@@ -230,7 +230,17 @@ async function selectContextItem(value) {
 
   const [selectedItem] = value
 
-  if (!selectedItem) return
+  if (!selectedItem && !selectedItem?.type) {
+    selectedRegionsKeys.value = []
+    selectedCitiesKeys.value = []
+    selectedHotelsKeys.value = []
+
+    await setHotels()
+    await setCategories()
+    await setMeals()
+
+    return
+  }
 
   if (selectedItem.type === 'region') {
     selectedCitiesKeys.value = []
