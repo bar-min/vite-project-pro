@@ -42,3 +42,13 @@ export async function getContextItems(payload = { term: '', paging: null }) {
 
   return data
 }
+
+export async function searchItems(payload) {
+  const { data } = await http.post('/gds/filter/search', payload, {
+    headers: {
+      Authorization: `Basic ${btoa('iritest:test123')}`
+    }
+  })
+
+  return data
+}

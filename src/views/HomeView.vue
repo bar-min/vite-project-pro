@@ -16,7 +16,8 @@ import {
   getHotels,
   getCategories,
   getMeals,
-  getContextItems
+  getContextItems,
+  searchItems
 } from '@/common/services/filters.js'
 
 const switchToMergedField = ref(false)
@@ -66,6 +67,8 @@ const payload = ref({
   categories: selectedCategoriesKeys,
   meals: selectedMealsKeys
 })
+
+const searchedItems = ref([])
 
 onMounted(async () => {
   regions.value = await getRegions()
@@ -271,6 +274,33 @@ async function searchContextItems(value) {
   mergedFieldList.value = await getContextItems({ term: value })
 }
 
+// Search
+async function search() {
+  const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
+  const [check_in, check_out] = modifiedDates
+
+  const guests_groups = rooms.value.map((el) => {
+    const childrenAges = el.children.map((item) => parseInt(item))
+    return {
+      adults: el.adults,
+      childrenAges
+    }
+  })
+
+  const hotel_ids = selectedHotels.value.map((el) => String(el.key))
+  // const region_id = String(selectedRegionsKeys.value[0])
+
+  const searchPayload = {
+    check_in,
+    check_out,
+    guests_groups,
+    hotel_ids: hotel_ids,
+    residency: 'RU'
+  }
+
+  searchedItems.value = await searchItems(searchPayload)
+}
+
 watch(
   () => showAvailableResults.value,
   (value) => {
@@ -449,9 +479,15 @@ watch(
           <AppAdvancedSearch class="advanced-search-filter" />
           <AppHotelsAvailability class="hotels-availability-filter" />
           <div class="search-button-wrapper">
-            <button class="search-button">Search</button>
+            <button class="search-button" @click="search">Search</button>
           </div>
         </div>
+      </div>
+
+      <div class="searched-items">
+        <ul>
+          <li v-for="(item, idx) in searchedItems" :key="idx">{{ item }}</li>
+        </ul>
       </div>
     </div>
   </main>
@@ -468,6 +504,16 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.searched-items {
+  margin-top: 100px;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 .first-filters {
@@ -543,7 +589,7 @@ watch(
 .budget-filter {
   display: flex;
   gap: 12px;
-  flex-basis: 430px;
+  flex-basis: 440px;
 
   @media (max-width: 1170px) {
     flex-basis: 370px;
