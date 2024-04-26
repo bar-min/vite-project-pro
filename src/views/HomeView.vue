@@ -210,8 +210,7 @@ async function searchHotels(value) {
 }
 
 async function loadMoreHotels() {
-  const page = hotelsPaging.value.size / 10
-  hotelsPaging.value.number += page
+  hotelsPaging.value.number += 1
   const { hotels: hotelsData, dates: datesData } = await getHotels({
     ...payload.value,
     paging: hotelsPaging.value,
