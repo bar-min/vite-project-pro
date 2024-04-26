@@ -63,6 +63,11 @@ function onBlur(idx) {
   rooms.value[idx].showList = false
 }
 
+function sortChildren(items) {
+  const sorted = [...items].sort((a, b) => parseInt(b) - parseInt(a))
+  return sorted
+}
+
 watch(
   () => rooms.value,
   (value) => {
@@ -99,7 +104,7 @@ watch(
                 <div class="children-list" v-show="room.children.length">
                   <div
                     class="children-item"
-                    v-for="(child, childIdx) in room.children"
+                    v-for="(child, childIdx) in sortChildren(room.children)"
                     :key="child"
                   >
                     <span>{{ child }}</span>
