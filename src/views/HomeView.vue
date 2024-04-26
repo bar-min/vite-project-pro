@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
 import AppContextAutocomplete from '@/components/Reusable/Fields/AppContextAutocomplete.vue'
 import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
@@ -26,6 +26,8 @@ const mergedFieldList = ref([])
 
 const dates = ref([])
 const datesRange = ref([])
+const datesValidationTrigger = ref(false)
+
 const rooms = ref([])
 
 const showAvailableResults = ref(true)
@@ -70,6 +72,14 @@ const payload = ref({
 
 const searchedItems = ref([])
 
+// Validation dates field
+const isValidDates = computed(() => {
+  if (!datesValidationTrigger.value) return true
+
+  const isFilledDates = dates.value?.filter((el) => el)
+  return isFilledDates?.length === 2
+})
+
 onMounted(async () => {
   regions.value = await getRegions()
   cities.value = await getCities()
@@ -78,7 +88,6 @@ onMounted(async () => {
   datesRange.value = datesData
   categories.value = await getCategories()
   meals.value = await getMeals()
-  mergedFieldList.value = await getContextItems()
 })
 
 // Helpers
@@ -101,6 +110,10 @@ function checkDates() {
   if (!isDateIncluded) {
     dates.value = []
   }
+}
+
+function isArraysEqual(firstArray, secondArray) {
+  return JSON.stringify(firstArray) === JSON.stringify(secondArray)
 }
 
 // Setters
@@ -143,6 +156,8 @@ async function setMeals() {
 
 // Regions
 async function selectRegions(value) {
+  if (isArraysEqual(selectedRegions.value, value)) return
+
   selectedRegions.value = value
   selectedRegionsKeys.value = value.map((el) => el.key)
 
@@ -159,6 +174,8 @@ async function searchRegions(value) {
 
 // Cities
 async function selectCities(value) {
+  if (isArraysEqual(selectedCities.value, value)) return
+
   selectedCities.value = value
   selectedCitiesKeys.value = value.map((el) => el.key)
 
@@ -203,6 +220,8 @@ async function loadMoreHotels() {
 
 // Categories
 async function selectCategories(value) {
+  if (isArraysEqual(selectedCategories.value, value)) return
+
   selectedCategories.value = value
   selectedCategoriesKeys.value = value = value.map((el) => el.key)
 
@@ -217,6 +236,8 @@ async function searchCategories(value) {
 
 // Meals
 async function selectMeals(value) {
+  if (isArraysEqual(selectedMeals.value, value)) return
+
   selectedMeals.value = value
   selectedMealsKeys.value = value.map((el) => el.key)
 
@@ -231,8 +252,9 @@ async function searchMeals(value) {
 
 // Context
 async function selectContextItem(value) {
-  mergedField.value = value
+  if (isArraysEqual(mergedField.value, value)) return
 
+  mergedField.value = value
   const [selectedItem] = value
 
   if (!selectedItem && !selectedItem?.type) {
@@ -276,6 +298,9 @@ async function searchContextItems(value) {
 
 // Search
 async function search() {
+  datesValidationTrigger.value = true
+  if (!isValidDates.value) return
+
   const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
   const [check_in, check_out] = modifiedDates
 
@@ -288,7 +313,6 @@ async function search() {
   })
 
   const hotel_ids = selectedHotels.value.map((el) => String(el.key))
-  // const region_id = String(selectedRegionsKeys.value[0])
 
   const searchPayload = {
     check_in,
@@ -327,11 +351,13 @@ watch(
     selectedHotelsKeys.value = []
     selectedCategoriesKeys.value = []
     selectedMealsKeys.value = []
+    dates.value = []
 
     if (value) {
       mergedField.value = []
       selectedCategories.value = []
       selectedMeals.value = []
+      mergedFieldList.value = await getContextItems()
     }
 
     if (!value) {
@@ -427,7 +453,12 @@ watch(
             @done="selectMeals"
           />
 
-          <AppCalendar v-model="dates" :dates-range="datesRange" class="datepicker-filter" />
+          <AppCalendar
+            v-model="dates"
+            :dates-range="datesRange"
+            :isValid="isValidDates"
+            class="datepicker-filter"
+          />
 
           <AppRoomField v-model="rooms" class="room-filter-desktop" />
         </div>
@@ -469,7 +500,7 @@ watch(
             </div>
 
             <div class="price-filter">
-              <AppDigitalInput v-model="priceFrom" class="price-filter__from" />
+              <AppDigitalInput v-model="priceFrom" :max="priceTo" class="price-filter__from" />
               <AppDigitalInput v-model="priceTo" class="price-filter__to" />
             </div>
           </div>

@@ -6,12 +6,16 @@ import AppIcon from '../AppIcon.vue'
 
 const props = defineProps({
   modelValue: {
-    type: Array,
+    type: [Array, null],
     required: true
   },
   datesRange: {
     type: Object,
     default: () => {}
+  },
+  isValid: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -59,7 +63,7 @@ function clearValues() {
   }
 }
 
-function closePicker() {
+function closeDatepicker() {
   if (datepicker.value) {
     datepicker.value.selectDate()
   }
@@ -70,6 +74,7 @@ function closePicker() {
   <div class="datepicker">
     <VueDatePicker
       class="picker"
+      :class="{ invalid: !isValid }"
       ref="datepicker"
       v-model="date"
       range
@@ -83,9 +88,9 @@ function closePicker() {
       :enable-time-picker="false"
       :prevent-min-max-navigation="true"
       :clearable="false"
-      @closed="closePicker"
+      @closed="closeDatepicker"
     >
-      <template #action-row="{ selectDate, internalModelValue }">
+      <template #action-row="{ selectDate, closePicker, internalModelValue }">
         <p class="current-selection">
           {{ formatDate(internalModelValue) }} {{ getDiffDays(internalModelValue) }}
         </p>
@@ -98,7 +103,7 @@ function closePicker() {
 
         <div class="action-buttons">
           <button class="clear-button" @click="clearValues">Clear</button>
-          <button class="select-button" @click="selectDate">Done</button>
+          <button class="select-button" @click="((e) => selectDate(e), closePicker)">Done</button>
         </div>
       </template>
     </VueDatePicker>
@@ -138,6 +143,10 @@ function closePicker() {
   @media (max-width: 600px) {
     display: block;
   }
+}
+
+.invalid .dp__input {
+  border-color: red;
 }
 
 .dp__menu {
