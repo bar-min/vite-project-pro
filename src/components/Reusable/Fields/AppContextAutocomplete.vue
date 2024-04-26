@@ -27,10 +27,6 @@ const props = defineProps({
     required: false,
     default: null
   },
-  multiple: {
-    type: Boolean,
-    default: true
-  },
   openWindowWidth: {
     type: [Boolean, String],
     default: '100%'
@@ -64,24 +60,8 @@ const focus = ref(false)
 const onlySelected = ref(false)
 
 function onSelect(item) {
-  let itemIndex = -1
-
-  itemIndex = selectedItems.value.findIndex((el) => {
-    return `${el.type}-${el.name}` === `${item.type}-${item.name}`
-  })
-
-  if (!props.multiple) {
-    if (itemIndex === -1) {
-      if (selectedItems.value.length) return
-      selectedItems.value.push(item)
-    } else {
-      selectedItems.value.splice(itemIndex, 1)
-    }
-  }
-
-  if (props.multiple) {
-    itemIndex === -1 ? selectedItems.value.push(item) : selectedItems.value.splice(itemIndex, 1)
-  }
+  selectedItems.value = []
+  selectedItems.value.push(item)
 }
 
 function showList() {
