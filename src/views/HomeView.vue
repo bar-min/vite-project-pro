@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
+import AppLoader from '@/components/Reusable/AppLoader.vue'
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
 import AppContextAutocomplete from '@/components/Reusable/Fields/AppContextAutocomplete.vue'
 import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
@@ -19,6 +20,8 @@ import {
   getContextItems,
   searchItems
 } from '@/common/services/filters.js'
+
+const loading = ref(false)
 
 const switchToMergedField = ref(false)
 const mergedField = ref([])
@@ -298,31 +301,49 @@ async function searchContextItems(value) {
 
 // Search
 async function search() {
-  datesValidationTrigger.value = true
-  if (!isValidDates.value) return
+  try {
+    loading.value = true
+    datesValidationTrigger.value = true
+    if (!isValidDates.value) return
 
-  const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
-  const [check_in, check_out] = modifiedDates
+    const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
+    const [check_in, check_out] = modifiedDates
 
-  const guests_groups = rooms.value.map((el) => {
-    const childrenAges = el.children.map((item) => parseInt(item))
-    return {
-      adults: el.adults,
-      childrenAges
+    const guests_groups = rooms.value.map((el) => {
+      const childrenAges = el.children.map((item) => parseInt(item))
+      return {
+        adults: el.adults,
+        childrenAges
+      }
+    })
+
+    let hotel_ids = []
+
+    if (!switchToMergedField.value) {
+      hotel_ids = selectedHotels.value.length
+        ? selectedHotels.value.map((el) => String(el.key))
+        : hotels.value.map((el) => String(el.key))
+    } else {
+      const [selectedItem] = mergedField.value
+      hotel_ids = !selectedItem.type
+        ? [String(selectedItem.key)]
+        : hotels.value.map((el) => String(el.key))
     }
-  })
 
-  const hotel_ids = selectedHotels.value.map((el) => String(el.key))
+    const searchPayload = {
+      check_in,
+      check_out,
+      guests_groups,
+      hotel_ids: hotel_ids,
+      residency: 'RU'
+    }
 
-  const searchPayload = {
-    check_in,
-    check_out,
-    guests_groups,
-    hotel_ids: hotel_ids,
-    residency: 'RU'
+    searchedItems.value = await searchItems(searchPayload)
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
   }
-
-  searchedItems.value = await searchItems(searchPayload)
 }
 
 watch(
@@ -375,6 +396,7 @@ watch(
 
 <template>
   <main>
+    <AppLoader v-show="loading" />
     <div class="home-wrapper">
       <div class="home-container">
         <div class="first-filters">
