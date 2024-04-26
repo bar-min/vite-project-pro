@@ -97,7 +97,7 @@ watch(
     selectedItems.value = value
 
     if (props.itemLabel) {
-      const labels = value.map((el) => el[props.itemLabel])
+      const labels = value.map((el) => el.fullName || el.name)
       inputValue.value = labels.join(', ')
       return
     }
