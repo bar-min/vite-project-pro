@@ -366,6 +366,7 @@ watch(
 watch(
   () => switchToMergedField.value,
   async (value) => {
+    datesValidationTrigger.value = false
     selectedRegionsKeys.value = []
     selectedCitiesKeys.value = []
     selectedHotelsKeys.value = []
