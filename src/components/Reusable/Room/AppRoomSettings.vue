@@ -86,7 +86,9 @@ watch(
         <div class="room-wrapper" v-for="(room, idx) in rooms" :key="idx">
           <div class="room-header">
             <h2 class="room-title">Room {{ idx + 1 }}</h2>
-            <span v-show="idx" class="room-remove" @click="removeRoom(idx)">Remove</span>
+            <span v-show="rooms.length > 1" class="room-remove" @click="removeRoom(idx)">
+              Remove
+            </span>
           </div>
 
           <div class="room-body">
