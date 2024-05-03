@@ -3,6 +3,7 @@ import { ref, watch, computed, onMounted } from 'vue'
 import AppLoader from '@/components/Reusable/AppLoader.vue'
 import AppAutocomplete from '@/components/Reusable/Fields/AppAutocomplete.vue'
 import AppContextAutocomplete from '@/components/Reusable/Fields/AppContextAutocomplete.vue'
+import AppCurrencySelect from '@/components/Reusable/Fields/AppCurrencySelect.vue'
 import AppRoomField from '@/components/Reusable/Room/AppRoomField.vue'
 import AppCalendar from '@/components/Reusable/Fields/AppCalendar.vue'
 import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
@@ -31,7 +32,13 @@ const dates = ref([])
 const datesRange = ref([])
 const datesValidationTrigger = ref(false)
 
-const rooms = ref([])
+const rooms = ref([
+  {
+    adults: 2,
+    children: [],
+    showList: false
+  }
+])
 
 const showAvailableResults = ref(true)
 const removeStopSaleResults = ref(false)
@@ -274,19 +281,19 @@ async function selectContextItem(value) {
   if (selectedItem.type === 'region') {
     selectedCitiesKeys.value = []
     selectedHotelsKeys.value = []
-    selectedRegionsKeys.value = value.map((el) => el.key)
+    selectedRegionsKeys.value = [selectedItem.key]
   }
 
   if (selectedItem.type === 'city') {
     selectedRegionsKeys.value = []
     selectedHotelsKeys.value = []
-    selectedCitiesKeys.value = value.map((el) => el.key)
+    selectedCitiesKeys.value = [selectedItem.key]
   }
 
   if (!selectedItem.type) {
     selectedRegionsKeys.value = []
     selectedCitiesKeys.value = []
-    selectedHotelsKeys.value = value.map((el) => el.key)
+    selectedHotelsKeys.value = [selectedItem.key]
   }
 
   await setHotels()
@@ -305,6 +312,7 @@ async function search() {
     datesValidationTrigger.value = true
     if (!isValidDates.value) return
 
+    searchedItems.value = []
     const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
     const [check_in, check_out] = modifiedDates
 
@@ -343,6 +351,37 @@ async function search() {
   } finally {
     loading.value = false
   }
+}
+
+async function clearFilters() {
+  mergedField.value = []
+  selectedRegions.value = []
+  selectedRegionsKeys.value = []
+  selectedCities.value = []
+  selectedCitiesKeys.value = []
+  selectedHotels.value = []
+  selectedHotelsKeys.value = []
+  selectedCategories.value = []
+  selectedCategoriesKeys.value = []
+  selectedMeals.value = []
+  selectedMealsKeys.value = []
+  dates.value = []
+  datesValidationTrigger.value = false
+  rooms.value = [
+    {
+      adults: 2,
+      children: [],
+      showList: false
+    }
+  ]
+  priceFrom.value = 1
+  priceTo.value = 100000
+
+  clearHotelPaging()
+  await setCities()
+  await setHotels()
+  await setCategories()
+  await setMeals()
 }
 
 watch(
@@ -514,7 +553,10 @@ watch(
 
           <div class="budget-filter">
             <div class="budget-filter__wrapper">
-              <span class="budget-filter__title"> Budget Hotel Price </span>
+              <span class="budget-filter__title">
+                Total Budget <br />
+                Hotel Price
+              </span>
               <div class="budget-filter__radiobuttons">
                 <AppRadiobutton v-model="budget" value="Net">Net</AppRadiobutton>
                 <AppRadiobutton v-model="budget" value="Sell">Sell</AppRadiobutton>
@@ -524,6 +566,7 @@ watch(
             <div class="price-filter">
               <AppDigitalInput v-model="priceFrom" :max="priceTo" class="price-filter__from" />
               <AppDigitalInput v-model="priceTo" class="price-filter__to" />
+              <AppCurrencySelect />
             </div>
           </div>
         </div>
@@ -531,7 +574,9 @@ watch(
         <div class="tertiary-filters">
           <AppAdvancedSearch class="advanced-search-filter" />
           <AppHotelsAvailability class="hotels-availability-filter" />
+
           <div class="search-button-wrapper">
+            <button class="clear-button" @click="clearFilters">Clear all</button>
             <button class="search-button" @click="search">Search</button>
           </div>
         </div>
@@ -637,6 +682,7 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-basis: 221px;
 }
 
 .budget-filter {
@@ -651,6 +697,7 @@ watch(
 
   @media (max-width: 415px) {
     flex-basis: 290px;
+    flex-wrap: wrap;
   }
 
   &__wrapper {
@@ -704,7 +751,7 @@ watch(
 
 .price-filter {
   display: flex;
-  gap: 5px;
+  gap: 8px;
 
   &__from {
     flex-basis: 80px;
@@ -727,9 +774,20 @@ watch(
   color: white;
 }
 
+.clear-button {
+  font-weight: 500;
+  border: 1px solid hsla(0, 0%, 11%, 0.2);
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: hsla(0, 0%, 11%, 0.4);
+  color: white;
+  min-width: 100px;
+}
+
 .search-button-wrapper {
   display: flex;
   margin-left: auto;
+  gap: 12px;
 }
 
 .advanced-search-filter,

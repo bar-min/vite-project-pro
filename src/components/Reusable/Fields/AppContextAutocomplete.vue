@@ -60,8 +60,11 @@ const focus = ref(false)
 const onlySelected = ref(false)
 
 function onSelect(item) {
-  selectedItems.value = []
-  selectedItems.value.push(item)
+  const itemIndex = selectedItems.value.findIndex((el) => {
+    return `${el.type}-${el.name}` === `${item.type}-${item.name}`
+  })
+
+  itemIndex === -1 ? selectedItems.value.push(item) : selectedItems.value.splice(itemIndex, 1)
 }
 
 function showList() {

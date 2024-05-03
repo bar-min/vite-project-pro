@@ -1,17 +1,24 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import AppRoomSettings from '@/components/Reusable/Room/AppRoomSettings.vue'
 import AppIcon from '../AppIcon.vue'
 
 const emit = defineEmits(['update:modelValue'])
-
-const roomSettings = ref([
-  {
-    adults: 2,
-    children: [],
-    showList: false
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    required: true
   }
-])
+})
+
+const roomSettings = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
 
 const showSettings = ref(false)
 
@@ -34,14 +41,6 @@ const children = computed(() => {
     return prev + el.children.length
   }, 0)
 })
-
-watch(
-  () => roomSettings.value,
-  (value) => {
-    emit('update:modelValue', value)
-  },
-  { deep: true, immediate: true }
-)
 </script>
 
 <template>

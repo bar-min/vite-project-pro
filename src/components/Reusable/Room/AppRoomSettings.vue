@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 import AppNumberInput from '@/components/Reusable/Fields/AppNumberInput.vue'
 import AppIcon from '../AppIcon.vue'
 import { useClickOutside } from '@/composables/clickOutside'
@@ -36,7 +36,14 @@ const childAges = ref([
   '17 years'
 ])
 
-const rooms = ref(props.modelValue)
+const rooms = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
 
 function addRoom() {
   rooms.value.push({
@@ -67,16 +74,6 @@ function sortChildren(items) {
   const sorted = [...items].sort((a, b) => parseInt(b) - parseInt(a))
   return sorted
 }
-
-watch(
-  () => rooms.value,
-  (value) => {
-    emit('update:modelValue', value)
-  },
-  {
-    immediate: true
-  }
-)
 </script>
 
 <template>
