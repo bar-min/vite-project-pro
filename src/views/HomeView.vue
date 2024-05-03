@@ -405,27 +405,11 @@ watch(
 watch(
   () => switchToMergedField.value,
   async (value) => {
-    datesValidationTrigger.value = false
-    selectedRegions.value = []
-    selectedRegionsKeys.value = []
-    selectedCities.value = []
-    selectedCitiesKeys.value = []
-    selectedHotels.value = []
-    selectedHotelsKeys.value = []
-    selectedCategories.value = []
-    selectedCategoriesKeys.value = []
-    selectedMeals.value = []
-    selectedMealsKeys.value = []
-    dates.value = []
+    await clearFilters()
 
     if (value) {
-      mergedField.value = []
       mergedFieldList.value = await getContextItems()
     }
-
-    await setHotels()
-    await setCategories()
-    await setMeals()
   }
 )
 </script>
