@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AppCheckbox from './AppCheckbox.vue'
 import { useClickOutside } from '@/composables/clickOutside'
 import AppIcon from '../AppIcon.vue'
@@ -39,12 +39,17 @@ const filters = ref([
     value: false
   }
 ])
+
+const selectedFilters = computed(() => filters.value.filter((el) => el.value))
 </script>
 
 <template>
   <div class="advanced-search-wrapper">
     <div class="advanced-search">
       <button class="advanced-search-btn" @click.stop="showList = true">Advanced search</button>
+      <div class="advanced-search-badge" v-show="selectedFilters.length">
+        {{ selectedFilters.length }}
+      </div>
 
       <div class="advanced-search-angle" @click.stop="showList = true">
         <AppIcon name="angle" color="grey" />
@@ -89,6 +94,26 @@ const filters = ref([
   padding: 10px 25px 10px 10px;
   max-height: 40px;
   width: 100%;
+}
+
+.advanced-search-badge {
+  position: absolute;
+  display: inline-flex;
+  text-align: center;
+  align-items: center;
+  padding: 1px 4px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px #fff;
+  top: -7px;
+  left: -7px;
+  background: #ff7715;
+  border-radius: 50px;
+  color: #fff;
+  font-size: 13px;
+  height: 15px;
+  justify-content: center;
+  line-height: 13px;
+  min-width: 16px;
 }
 
 .advanced-filters {
