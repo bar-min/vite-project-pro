@@ -38,7 +38,7 @@ const props = defineProps({
   },
   inputOverflowCounter: {
     type: [Boolean, Number],
-    default: 3
+    default: 4
   },
   openWindowWidth: {
     type: [Boolean, String],
@@ -64,6 +64,7 @@ onUnmounted(() => {
 })
 
 const inputValue = ref('')
+const inputValueTitle = ref('')
 const focusInputValue = ref('')
 
 const selectedItems = ref([])
@@ -150,10 +151,12 @@ watch(
     if (props.itemLabel) {
       const labels = value.map((el) => el[props.itemLabel])
       inputValue.value = labels.join(', ')
+      inputValueTitle.value = labels.join(', ')
       return
     }
 
     inputValue.value = value.join(', ')
+    inputValueTitle.value = value.join(', ')
   }
 )
 
@@ -176,7 +179,7 @@ watch(
     <input
       v-model="inputValue"
       class="autocomplete-input"
-      :title="inputValue"
+      :title="inputValueTitle"
       :placeholder="placeholder"
       @focus="showList"
       readonly
