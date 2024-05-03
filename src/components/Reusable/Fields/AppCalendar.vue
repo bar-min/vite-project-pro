@@ -35,7 +35,7 @@ const datepicker = ref(null)
 function formatDate(date, raw = false) {
   if (!date?.length) return
   const dates = date.map((el) => {
-    const intl = new Intl.DateTimeFormat('en-US', {
+    const intl = new Intl.DateTimeFormat('en-GB', {
       dateStyle: 'long'
     })
 
@@ -83,7 +83,7 @@ function closeDatepicker() {
       :min-date="datesRange.from"
       :max-date="datesRange.to"
       :hide-offset-dates="true"
-      placeholder="Select range"
+      placeholder="Select period"
       month-name-format="long"
       :enable-time-picker="false"
       :prevent-min-max-navigation="true"
