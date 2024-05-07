@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
+import AppCheckbox from '@/components/Reusable/Fields/AppCheckbox.vue'
 import AppIcon from '../AppIcon.vue'
 
 const emit = defineEmits(['search', 'update:modelValue', 'done', 'load-more'])
@@ -30,6 +31,10 @@ const props = defineProps({
   openWindowWidth: {
     type: [Boolean, String],
     default: '100%'
+  },
+  showSelectOnly: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -134,7 +139,11 @@ watch(
         @input="emit('search', focusInputValue)"
       />
 
-      <ul class="focus-list" ref="focusList">
+      <div class="only-selected" v-if="showSelectOnly">
+        <AppCheckbox v-model="onlySelected" position-label="right">Only selected</AppCheckbox>
+      </div>
+
+      <ul v-if="!onlySelected" class="focus-list" ref="focusList">
         <li class="list-key" v-for="(values, key) in list" :key="key">
           <template v-if="values.length">
             <span class="list-key-title">{{ key[0].toUpperCase() + key.slice(1) }}</span>
@@ -153,6 +162,19 @@ watch(
           </template>
         </li>
         <div class="observer" ref="loading"></div>
+      </ul>
+
+      <ul v-else class="focus-list" ref="focusList">
+        <li
+          class="list-item"
+          :class="{ selected: onHoverSelected(item) }"
+          v-for="(item, idx) in selectedItems"
+          :title="item.fullName || item.name"
+          :key="idx"
+          @click="onSelect(item)"
+        >
+          {{ item.fullContextName || item.name }}
+        </li>
       </ul>
 
       <div class="accept-wrapper">
