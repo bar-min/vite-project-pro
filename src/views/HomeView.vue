@@ -497,7 +497,6 @@ watch(
                 placeholder="Where are you going?"
                 item-label="name"
                 :list="mergedFieldList"
-                :show-select-only="false"
                 :multiple="false"
                 @search="searchContextItems"
                 @done="selectContextItem"
@@ -695,6 +694,7 @@ watch(
   flex-direction: column;
   gap: 2px;
   flex-basis: 221px;
+  white-space: nowrap;
 }
 
 .budget-filter {
