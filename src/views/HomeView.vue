@@ -314,9 +314,9 @@ async function search() {
 
     searchedItems.value = []
     const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
-    const [check_in, check_out] = modifiedDates
+    const [date_from, date_to] = modifiedDates
 
-    const guests_groups = rooms.value.map((el) => {
+    const guestsGroups = rooms.value.map((el) => {
       const childrenAges = el.children.map((item) => parseInt(item))
       return {
         adults: el.adults,
@@ -324,25 +324,56 @@ async function search() {
       }
     })
 
-    let hotel_ids = []
+    const customPayload = {}
+
+    const clearCustomPayload = () => {
+      return Object.keys(customPayload).forEach((key) => delete customPayload[key])
+    }
 
     if (!switchToMergedField.value) {
-      hotel_ids = selectedHotels.value.length
-        ? selectedHotels.value.map((el) => String(el.key))
-        : hotels.value.map((el) => String(el.key))
+      clearCustomPayload()
+      const regions = selectedRegionsKeys.value
+      const cities = selectedCitiesKeys.value
+      const hotels = selectedHotels.value.map((el) => el.key)
+      const categories = selectedCategoriesKeys.value
+      const meals = selectedMealsKeys.value
+
+      if (hotels.length) {
+        customPayload.hotels = hotels
+        customPayload.meals = meals
+      } else if (cities.length) {
+        customPayload.cities = cities
+        customPayload.categories = categories
+        customPayload.meals = meals
+      } else if (regions.length) {
+        customPayload.regions = regions
+        customPayload.categories = categories
+        customPayload.meals = meals
+      } else {
+        customPayload.categories = categories
+        customPayload.meals = meals
+      }
     } else {
-      const [selectedItem] = mergedField.value
-      hotel_ids = !selectedItem.type
-        ? [String(selectedItem.key)]
-        : hotels.value.map((el) => String(el.key))
+      clearCustomPayload()
+      const regions = mergedField.value.filter((el) => el.type === 'region').map((el) => el.key)
+      const cities = mergedField.value.filter((el) => el.type === 'city').map((el) => el.key)
+      const hotels = mergedField.value.filter((el) => !el.type).map((el) => el.key)
+      const categories = selectedCategoriesKeys.value
+      const meals = selectedMealsKeys.value
+
+      customPayload.regions = regions
+      customPayload.cities = cities
+      customPayload.hotels = hotels
+      customPayload.categories = categories
+      customPayload.meals = meals
     }
 
     const searchPayload = {
-      check_in,
-      check_out,
-      guests_groups,
-      hotel_ids: hotel_ids,
-      residency: 'RU'
+      dateFrom: date_from,
+      dateTo: date_to,
+      guestsGroups,
+      residency: 'RU',
+      ...customPayload
     }
 
     searchedItems.value = await searchItems(searchPayload)
