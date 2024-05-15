@@ -42,22 +42,22 @@ const rooms = ref([
   }
 ])
 
-const showAvailableResults = ref(true)
-const removeStopSaleResults = ref(false)
+const showAvailableResults = ref(false)
+const removeStopSaleResults = ref(true)
 
 const quotaTypes = computed(() => {
   const available = showAvailableResults.value
   const stops = removeStopSaleResults.value
 
   if (available) {
-    return 1
+    return [1]
   }
 
   if (stops) {
-    return 2
+    return [0, 1]
   }
 
-  return 0
+  return []
 })
 
 const budget = ref('Net')
@@ -409,7 +409,7 @@ async function search() {
       dateTo: date_to,
       guestsGroups,
       residency: 'RU',
-      quotaTypes: quotaTypes.value === 0 ? [] : [quotaTypes.value],
+      quotaTypes: quotaTypes.value,
       ...customPayload
     }
 

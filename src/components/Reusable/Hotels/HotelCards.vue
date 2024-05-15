@@ -74,15 +74,17 @@ async function loadMoreVariants(id) {
         </div>
 
         <div class="searched-items__more-price">
-          <div class="searched-items__price">{{ calcFullHotelPrice(item.rates) }}</div>
+          <div class="searched-items__price">
+            <div>{{ calcFullHotelPrice(item.rates) }}</div>
+            <AppIcon name="basket" size="20px" color="white" />
+          </div>
 
           <div class="searched-items__more">
-            <button @click="loadMoreVariants(item.hotel_id)">More variants</button>
+            <button @click="loadMoreVariants(item.hotel_id)">
+              <span>More variants</span>
+              <AppIcon name="angle" color="#ff7715" size="18px" />
+            </button>
           </div>
-        </div>
-
-        <div class="searched-items__basket">
-          <AppIcon name="basket" size="20px" color="white" />
         </div>
       </div>
     </div>
@@ -111,6 +113,7 @@ async function loadMoreVariants(id) {
   }
 
   &__price {
+    text-align: center;
     padding: 6px;
     border-radius: 8px;
     font-weight: 600;
@@ -159,7 +162,7 @@ async function loadMoreVariants(id) {
     margin-top: 10px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
   }
 
   &__rooms {
@@ -182,27 +185,28 @@ async function loadMoreVariants(id) {
 
   &__more {
     button {
+      white-space: nowrap;
+      display: flex;
+      gap: 4px;
+      align-items: center;
       border-radius: 8px;
       padding: 6px 10px;
-      background-color: #05ff0563;
+      color: #ff7715;
+      font-weight: 700;
     }
   }
 
   &__price {
-    color: #ff7715;
-    font-weight: 700;
-    // min-width: 85px;
-    // max-width: 85px;
-  }
-
-  &__basket {
     cursor: pointer;
-    border-radius: 8px;
+    display: flex;
+    color: white;
+    font-weight: 700;
     background-color: #ff7715;
     padding: 8px;
-    width: 40px;
-    height: 38px;
-    text-align: center;
+    gap: 12px;
+    border-radius: 8px;
+    min-width: 120px;
+    justify-content: space-evenly;
   }
 }
 </style>
