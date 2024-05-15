@@ -52,3 +52,13 @@ export async function searchItems(payload) {
 
   return data
 }
+
+export async function searchItemsByHotelId(id, payload) {
+  const { data } = await http.post(`/gds/filter/search/${id}`, payload, {
+    headers: {
+      Authorization: `Basic ${btoa('iritest:test123')}`
+    }
+  })
+
+  return data
+}

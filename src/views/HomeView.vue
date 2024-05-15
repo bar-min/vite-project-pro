@@ -12,6 +12,8 @@ import AppDigitalInput from '@/components/Reusable/Fields/AppDigitalInput.vue'
 import AppSwitcher from '@/components/Reusable/Fields/AppSwitcher.vue'
 import AppAdvancedSearch from '@/components/Reusable/Fields/AppAdvancedSearch.vue'
 import AppHotelsAvailability from '@/components/Reusable/Fields/AppHotelsAvailability.vue'
+import HotelCards from '@/components/Reusable/Hotels/HotelCards.vue'
+
 import {
   getRegions,
   getCities,
@@ -42,6 +44,21 @@ const rooms = ref([
 
 const showAvailableResults = ref(true)
 const removeStopSaleResults = ref(false)
+
+const quotaTypes = computed(() => {
+  const available = showAvailableResults.value
+  const stops = removeStopSaleResults.value
+
+  if (available) {
+    return 1
+  }
+
+  if (stops) {
+    return 2
+  }
+
+  return 0
+})
 
 const budget = ref('Net')
 const priceFrom = ref(1)
@@ -88,6 +105,25 @@ const isValidDates = computed(() => {
 
   const isFilledDates = dates.value?.filter((el) => el)
   return isFilledDates?.length === 2
+})
+
+const searchPayload = computed(() => {
+  const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
+  const [dateFrom, dateTo] = modifiedDates
+
+  const guestsGroups = rooms.value.map((el) => {
+    const children_ages = el.children.map((item) => parseInt(item))
+    return {
+      adults: el.adults,
+      children_ages
+    }
+  })
+
+  return {
+    dateFrom,
+    dateTo,
+    guestsGroups
+  }
 })
 
 onMounted(async () => {
@@ -317,10 +353,10 @@ async function search() {
     const [date_from, date_to] = modifiedDates
 
     const guestsGroups = rooms.value.map((el) => {
-      const childrenAges = el.children.map((item) => parseInt(item))
+      const children_ages = el.children.map((item) => parseInt(item))
       return {
         adults: el.adults,
-        childrenAges
+        children_ages
       }
     })
 
@@ -373,6 +409,7 @@ async function search() {
       dateTo: date_to,
       guestsGroups,
       residency: 'RU',
+      quotaTypes: quotaTypes.value === 0 ? [] : [quotaTypes.value],
       ...customPayload
     }
 
@@ -593,11 +630,7 @@ watch(
         </div>
       </div>
 
-      <div class="searched-items">
-        <ul>
-          <li v-for="(item, idx) in searchedItems" :key="idx">{{ item }}</li>
-        </ul>
-      </div>
+      <HotelCards :items="searchedItems" :payload="searchPayload" />
     </div>
   </main>
 </template>
@@ -613,16 +646,6 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.searched-items {
-  margin-top: 100px;
-
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
 }
 
 .first-filters {
