@@ -123,7 +123,8 @@ const searchPayload = computed(() => {
   return {
     dateFrom,
     dateTo,
-    guestsGroups
+    guestsGroups,
+    quotaTypes: quotaTypes.value
   }
 })
 
@@ -713,6 +714,7 @@ watch(
       <HotelCards
         :items="searchedItems"
         :payload="searchPayload"
+        :dates="dates"
         @load-more-variants="loadMoreVariants"
       />
     </div>

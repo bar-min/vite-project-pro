@@ -1,6 +1,7 @@
 <script setup>
 import AppIcon from '@/components/Reusable/AppIcon.vue'
 import AppRadiobutton from '../Fields/AppRadiobutton.vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   items: {
@@ -10,6 +11,10 @@ const props = defineProps({
   payload: {
     type: Object,
     default: () => {}
+  },
+  dates: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -19,6 +24,13 @@ const currencies = {
   EUR: '€',
   ЛВ: 'ЛВ'
 }
+
+const getDiffDays = computed(() => {
+  if (!props.dates || props.dates?.length < 2) return
+  const timeDiff = Math.abs(props.dates[1].getTime() - props.dates[0].getTime())
+  const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24))
+  return `(${diffDays + 1} days/${diffDays} nights)`
+})
 
 function calcFullHotelPrice(rates) {
   const currency = rates[0].currency
@@ -40,7 +52,7 @@ function calcAllVariantsPrice(variants) {
 <template>
   <div class="searched-items">
     <div class="searched-items__block" v-for="(item, idx) in items" :key="idx">
-      <h3 class="searched-items__name">{{ item.hotel_name }}</h3>
+      <h3 class="searched-items__name">{{ item.hotel_name }} {{ getDiffDays }}</h3>
 
       <div class="searched-items__body">
         <ul class="searched-items__rooms" v-if="!item.showAllVariants || !item.allVariants">
