@@ -1,6 +1,6 @@
 <script setup>
 import AppIcon from '@/components/Reusable/AppIcon.vue'
-import { searchItemsByHotelId } from '@/common/services/filters.js'
+import AppRadiobutton from '../Fields/AppRadiobutton.vue'
 
 const props = defineProps({
   items: {
@@ -13,6 +13,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['load-more-variants'])
+
 const currencies = {
   EUR: '€',
   ЛВ: 'ЛВ'
@@ -24,9 +26,14 @@ function calcFullHotelPrice(rates) {
   return `${price} ${currencies[currency]}`
 }
 
-async function loadMoreVariants(id) {
-  // const data = await searchItemsByHotelId(id, props.payload)
-  // console.log('data', data)
+function calcAllVariantsPrice(variants) {
+  const currency = Object.values(variants)[0].items[0].currency
+  const price = Object.values(variants).reduce((acc, el) => {
+    const [idx, price, currency] = el.allVariantsPrice
+    return parseFloat((acc + price).toFixed(2))
+  }, 0)
+
+  return `${price} ${currencies[currency]}`
 }
 </script>
 
@@ -36,7 +43,7 @@ async function loadMoreVariants(id) {
       <h3 class="searched-items__name">{{ item.hotel_name }}</h3>
 
       <div class="searched-items__body">
-        <ul class="searched-items__rooms">
+        <ul class="searched-items__rooms" v-if="!item.showAllVariants || !item.allVariants">
           <li
             class="searched-items__room room-item"
             v-for="(room, roomIdx) in item.rates"
@@ -69,18 +76,75 @@ async function loadMoreVariants(id) {
           </li>
         </ul>
 
+        <ul class="searched-items__variants" v-if="item.showAllVariants && item.allVariants">
+          <li
+            class="searched-items__variant variant-item"
+            v-for="(hotel, idx) in item.allVariants"
+            :key="idx"
+          >
+            <div class="variant-item__room">
+              <span>Room {{ idx + 1 }}: </span>
+              <span>{{ hotel.guestGroup.adults }} Adult </span>
+              <span v-if="hotel.guestGroup.children_ages.length">
+                / {{ hotel.guestGroup.children_ages.length }} Child
+              </span>
+            </div>
+
+            <ul class="searched-items__rooms">
+              <li
+                class="searched-items__room room-item"
+                v-for="(room, roomIdx) in hotel.items"
+                :key="roomIdx"
+              >
+                <div class="room-item__acc">
+                  <div v-for="(acc, accIdx) in room.rooms" :key="accIdx">{{ acc.name }}</div>
+                </div>
+
+                <div class="room-item__meals">
+                  <div v-for="(meal, mealIdx) in room.meals" :key="mealIdx">{{ meal.code }}</div>
+                </div>
+
+                <div
+                  class="room-item__price"
+                  :class="[['room-item__price-color-' + room.quotaType]]"
+                >
+                  {{ room.price }} {{ currencies[room.currency] }}
+                </div>
+
+                <div class="room-item__info">
+                  <div>270€ until 30.06.2024</div>
+                  <div>300€ until 15.07.2024</div>
+                </div>
+
+                <div>
+                  <AppRadiobutton
+                    v-model="hotel.allVariantsPrice"
+                    :value="[roomIdx, room.price, room.currency]"
+                  />
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
         <div class="searched-items__info">
           <AppIcon name="info" size="30px" color="#319AE6" />
         </div>
 
         <div class="searched-items__more-price">
           <div class="searched-items__price">
-            <div>{{ calcFullHotelPrice(item.rates) }}</div>
+            <div>
+              {{
+                item.showAllVariants && item.allVariants
+                  ? calcAllVariantsPrice(item.allVariants)
+                  : calcFullHotelPrice(item.rates)
+              }}
+            </div>
             <AppIcon name="basket" size="20px" color="white" />
           </div>
 
-          <div class="searched-items__more">
-            <button @click="loadMoreVariants(item.hotel_id)">
+          <div div class="searched-items__more" v-show="!item.showAllVariants">
+            <button @click="emit('load-more-variants', { idx, hotel_id: item.hotel_id })">
               <span>More variants</span>
               <AppIcon name="angle" color="#ff7715" size="18px" />
             </button>
@@ -92,14 +156,29 @@ async function loadMoreVariants(id) {
 </template>
 
 <style lang="scss" scoped>
+.variant-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  &__room {
+    min-width: 220px;
+    max-width: 220px;
+  }
+
+  &:not(:last-child) {
+    padding-bottom: 14px;
+    border-bottom: 1px dotted rgb(128, 128, 128, 0.5);
+  }
+}
 .room-item {
   display: flex;
   align-items: center;
   gap: 20px;
 
   &__room {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 220px;
+    max-width: 220px;
   }
 
   &__acc {
@@ -136,7 +215,6 @@ async function loadMoreVariants(id) {
   &__info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
     font-size: 14px;
   }
 }
@@ -166,6 +244,12 @@ async function loadMoreVariants(id) {
   }
 
   &__rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__variants {
     display: flex;
     flex-direction: column;
     gap: 14px;

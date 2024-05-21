@@ -13,6 +13,7 @@ import AppSwitcher from '@/components/Reusable/Fields/AppSwitcher.vue'
 import AppAdvancedSearch from '@/components/Reusable/Fields/AppAdvancedSearch.vue'
 import AppHotelsAvailability from '@/components/Reusable/Fields/AppHotelsAvailability.vue'
 import HotelCards from '@/components/Reusable/Hotels/HotelCards.vue'
+import { searchItemsByHotelId } from '@/common/services/filters.js'
 
 import {
   getRegions,
@@ -108,7 +109,7 @@ const isValidDates = computed(() => {
 })
 
 const searchPayload = computed(() => {
-  const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
+  const modifiedDates = dates.value.filter((el) => el).map((el) => el.toISOString().split('T')[0])
   const [dateFrom, dateTo] = modifiedDates
 
   const guestsGroups = rooms.value.map((el) => {
@@ -124,6 +125,27 @@ const searchPayload = computed(() => {
     dateTo,
     guestsGroups
   }
+})
+
+const guestsGroups = computed(() => {
+  return rooms.value.map((el) => {
+    const children_ages = el.children.map((item) => parseInt(item))
+    return {
+      adults: el.adults,
+      children_ages
+    }
+  })
+})
+
+const guestsGroupsCounter = computed(() => {
+  return guestsGroups.value.reduce((acc, el, idx) => {
+    const key = el.children_ages.length
+      ? `+${el.adults}-${String(el.children_ages)}`
+      : `+${el.adults}`
+    acc[key] ??= []
+    acc[key].push(idx)
+    return acc
+  }, {})
 })
 
 onMounted(async () => {
@@ -352,14 +374,6 @@ async function search() {
     const modifiedDates = dates.value.map((el) => el.toISOString().split('T')[0])
     const [date_from, date_to] = modifiedDates
 
-    const guestsGroups = rooms.value.map((el) => {
-      const children_ages = el.children.map((item) => parseInt(item))
-      return {
-        adults: el.adults,
-        children_ages
-      }
-    })
-
     const customPayload = {}
 
     const clearCustomPayload = () => {
@@ -407,13 +421,35 @@ async function search() {
     const searchPayload = {
       dateFrom: date_from,
       dateTo: date_to,
-      guestsGroups,
+      guestsGroups: guestsGroups.value,
       residency: 'RU',
       quotaTypes: quotaTypes.value,
       ...customPayload
     }
 
-    searchedItems.value = await searchItems(searchPayload)
+    const data = await searchItems(searchPayload)
+
+    const modifiedData = data.map((el) => {
+      const modifiedRates = el.rates.reduce((acc, item) => {
+        const key = item.guestGroup.children_ages.length
+          ? `+${item.guestGroup.adults}-${String(item.guestGroup.children_ages)}`
+          : `+${item.guestGroup.adults}`
+        const counter = guestsGroupsCounter.value[key]
+        acc[key] ??= []
+
+        for (let num in counter) {
+          acc[key].push({ ...item })
+        }
+
+        return acc
+      }, {})
+
+      const rates = Object.values(modifiedRates).flat()
+
+      return { ...el, rates }
+    })
+
+    searchedItems.value = modifiedData
   } catch (err) {
     console.error(err)
   } finally {
@@ -450,6 +486,50 @@ async function clearFilters() {
   await setHotels()
   await setCategories()
   await setMeals()
+}
+
+async function loadMoreVariants({ idx, hotel_id }) {
+  try {
+    loading.value = true
+    const data = await searchItemsByHotelId(hotel_id, searchPayload.value)
+    const modifiedData = data.reduce((acc, el) => {
+      const group = el.guestGroup
+      const room = group.children_ages.length
+        ? `+${group.adults}-${String(group.children_ages)}`
+        : `+${group.adults}`
+      acc[room] ??= {}
+      acc[room].guestGroup = el.guestGroup
+      acc[room].items ??= []
+      acc[room].items.push(el)
+      acc[room].allVariantsPrice = [0, acc[room].items[0].price, acc[room].items[0].currency]
+      return acc
+    }, {})
+
+    const result = Object.values(modifiedData).reduce((acc, item) => {
+      const key = item.guestGroup.children_ages.length
+        ? `+${item.guestGroup.adults}-${String(item.guestGroup.children_ages)}`
+        : `+${item.guestGroup.adults}`
+      const counter = guestsGroupsCounter.value[key]
+      acc[key] ??= []
+
+      for (let num in counter) {
+        acc[key].push({ ...item })
+      }
+
+      return acc
+    }, {})
+
+    const modifiedResult = Object.values(result).flat()
+
+    searchedItems.value[idx].allVariants = modifiedResult
+    searchedItems.value.forEach((el, elIdx) => {
+      elIdx === idx ? (el.showAllVariants = true) : (el.showAllVariants = false)
+    })
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
 }
 
 watch(
@@ -630,7 +710,11 @@ watch(
         </div>
       </div>
 
-      <HotelCards :items="searchedItems" :payload="searchPayload" />
+      <HotelCards
+        :items="searchedItems"
+        :payload="searchPayload"
+        @load-more-variants="loadMoreVariants"
+      />
     </div>
   </main>
 </template>
