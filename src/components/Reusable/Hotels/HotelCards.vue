@@ -238,7 +238,7 @@ function calcAllVariantsPrice(variants) {
   &__price-calc {
     display: none;
     position: absolute;
-    top: -45px;
+    bottom: calc(100% + 5px);
     width: max-content;
     max-width: 800px;
     text-align: left;
