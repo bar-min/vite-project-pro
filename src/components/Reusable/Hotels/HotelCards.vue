@@ -47,6 +47,13 @@ function calcAllVariantsPrice(variants) {
 
   return `${price} ${currencies[currency]}`
 }
+
+function calcBruttoDetail(brutto, price) {
+  const bruttoPrice = parseFloat(brutto.split('=').at(-1))
+  const diffPrice = parseFloat((price - bruttoPrice).toFixed(2))
+  const fullString = `${brutto} + ${diffPrice} (Adhots costs) = ${price} `
+  return fullString
+}
 </script>
 
 <template>
@@ -81,7 +88,9 @@ function calcAllVariantsPrice(variants) {
               <div class="room-item__price" :class="[['room-item__price-color-' + room.quotaType]]">
                 {{ room.price }} {{ currencies[room.currency] }}
               </div>
-              <div class="room-item__price-calc">{{ room.bruttoDetail }}</div>
+              <div class="room-item__price-calc">
+                {{ calcBruttoDetail(room.bruttoDetail, room.price) }}
+              </div>
             </div>
 
             <div class="room-item__info">
@@ -126,7 +135,9 @@ function calcAllVariantsPrice(variants) {
                   >
                     {{ room.price }} {{ currencies[room.currency] }}
                   </div>
-                  <div class="room-item__price-calc">{{ room.bruttoDetail }}</div>
+                  <div class="room-item__price-calc">
+                    {{ calcBruttoDetail(room.bruttoDetail, room.price) }}
+                  </div>
                 </div>
 
                 <div class="room-item__info">
