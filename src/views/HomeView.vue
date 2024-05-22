@@ -425,6 +425,8 @@ async function search() {
       guestsGroups: guestsGroups.value,
       residency: 'RU',
       quotaTypes: quotaTypes.value,
+      priceFrom: priceFrom.value,
+      priceTo: priceTo.value,
       ...customPayload
     }
 

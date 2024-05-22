@@ -77,8 +77,11 @@ function calcAllVariantsPrice(variants) {
               <div v-for="(meal, mealIdx) in room.meals" :key="mealIdx">{{ meal.code }}</div>
             </div>
 
-            <div class="room-item__price" :class="[['room-item__price-color-' + room.quotaType]]">
-              {{ room.price }} {{ currencies[room.currency] }}
+            <div class="room-item__price-wrap">
+              <div class="room-item__price" :class="[['room-item__price-color-' + room.quotaType]]">
+                {{ room.price }} {{ currencies[room.currency] }}
+              </div>
+              <div class="room-item__price-calc">{{ room.bruttoDetail }}</div>
             </div>
 
             <div class="room-item__info">
@@ -116,11 +119,14 @@ function calcAllVariantsPrice(variants) {
                   <div v-for="(meal, mealIdx) in room.meals" :key="mealIdx">{{ meal.code }}</div>
                 </div>
 
-                <div
-                  class="room-item__price"
-                  :class="[['room-item__price-color-' + room.quotaType]]"
-                >
-                  {{ room.price }} {{ currencies[room.currency] }}
+                <div class="room-item__price-wrap">
+                  <div
+                    class="room-item__price"
+                    :class="[['room-item__price-color-' + room.quotaType]]"
+                  >
+                    {{ room.price }} {{ currencies[room.currency] }}
+                  </div>
+                  <div class="room-item__price-calc">{{ room.bruttoDetail }}</div>
                 </div>
 
                 <div class="room-item__info">
@@ -203,7 +209,12 @@ function calcAllVariantsPrice(variants) {
     max-width: 65px;
   }
 
+  &__price-wrap {
+    position: relative;
+  }
+
   &__price {
+    cursor: pointer;
     text-align: center;
     padding: 6px;
     border-radius: 8px;
@@ -222,6 +233,28 @@ function calcAllVariantsPrice(variants) {
 
   &__price-color-0 {
     background-color: #ffffcc;
+  }
+
+  &__price-calc {
+    display: none;
+    position: absolute;
+    top: -45px;
+    width: max-content;
+    max-width: 800px;
+    text-align: left;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    border-radius: 8px;
+    background: white;
+    z-index: 10;
+  }
+
+  &__price:hover ~ &__price-calc {
+    display: block;
+  }
+
+  &__price-calc:hover {
+    display: block;
   }
 
   &__info {
