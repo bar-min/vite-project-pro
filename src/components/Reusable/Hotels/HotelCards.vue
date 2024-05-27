@@ -1,6 +1,8 @@
 <script setup>
 import AppIcon from '@/components/Reusable/AppIcon.vue'
 import AppRadiobutton from '../Fields/AppRadiobutton.vue'
+import HotelsAndRoomsSorting from './HotelsAndRoomsSorting.vue'
+import HotelsPriceSorting from './HotelsPriceSorting.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -58,6 +60,11 @@ function calcBruttoDetail(brutto, price) {
 
 <template>
   <div class="searched-items">
+    <div class="searched-items__sorting" v-show="items.length">
+      <HotelsAndRoomsSorting />
+      <HotelsPriceSorting />
+    </div>
+
     <div class="searched-items__block" v-for="(item, idx) in items" :key="idx">
       <h3 class="searched-items__name">{{ item.hotel_name }} {{ getDiffDays }}</h3>
 
@@ -173,7 +180,7 @@ function calcBruttoDetail(brutto, price) {
           </div>
 
           <div div class="searched-items__more" v-show="!item.showAllVariants">
-            <button @click="emit('load-more-variants', { idx, hotel_id: item.hotel_id })">
+            <button @click="emit('load-more-variants', { hotel_id: item.hotel_id })">
               <span>More variants</span>
               <AppIcon name="angle" color="#ff7715" size="18px" />
             </button>
@@ -280,6 +287,11 @@ function calcBruttoDetail(brutto, price) {
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  &__sorting {
+    display: flex;
+    gap: 30px;
+  }
 
   &__block {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);

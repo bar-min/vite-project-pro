@@ -14,6 +14,7 @@ import AppAdvancedSearch from '@/components/Reusable/Fields/AppAdvancedSearch.vu
 import AppHotelsAvailability from '@/components/Reusable/Fields/AppHotelsAvailability.vue'
 import HotelCards from '@/components/Reusable/Hotels/HotelCards.vue'
 import { searchItemsByHotelId } from '@/common/services/filters.js'
+import { useFiltersStore } from '@/stores/filters'
 
 import {
   getRegions,
@@ -24,6 +25,8 @@ import {
   getContextItems,
   searchItems
 } from '@/common/services/filters.js'
+import { storeToRefs } from 'pinia'
+const store = useFiltersStore()
 
 const loading = ref(false)
 
@@ -147,6 +150,86 @@ const guestsGroupsCounter = computed(() => {
     acc[key].push(idx)
     return acc
   }, {})
+})
+
+const sortedSearchItemsByHotels = computed(() => {
+  if (!searchedItems.value.length) return
+  const hotelsSorting = store.hotelsAndRoomsSorting.selected.Hotels
+
+  if (hotelsSorting === 'Hotel name (Az▼)') {
+    return [...searchedItems.value].sort((a, b) => a.hotel_name.localeCompare(b.hotel_name))
+  }
+
+  if (hotelsSorting === 'Hotel name (Za▼)') {
+    return [...searchedItems.value].sort((a, b) => b.hotel_name.localeCompare(a.hotel_name))
+  }
+
+  if (hotelsSorting === 'Price (€▲)') {
+    return [...searchedItems.value]
+      .map((item) => {
+        const price = item.rates.reduce((acc, el) => parseFloat((acc + el.price).toFixed(2)), 0)
+        return { ...item, price }
+      })
+      .sort((a, b) => a.price - b.price)
+  }
+
+  if (hotelsSorting === 'Price (€▼)') {
+    return [...searchedItems.value]
+      .map((item) => {
+        const price = item.rates.reduce((acc, el) => parseFloat((acc + el.price).toFixed(2)), 0)
+        return { ...item, price }
+      })
+      .sort((a, b) => b.price - a.price)
+  }
+
+  return searchedItems.value
+})
+
+const sortedSearchItems = computed(() => {
+  const searchedItems = sortedSearchItemsByHotels.value
+  if (!searchedItems?.length) return
+  const roomsSorting = store.hotelsAndRoomsSorting.selected.Rooms
+
+  if (roomsSorting === 'Category') {
+    return [...searchedItems].map((el) => {
+      if (!el.allVariants) return { ...el }
+      const allVariants = el.allVariants.map((variant) => {
+        variant.items.sort((a, b) => a.rooms[0].name.localeCompare(b.rooms[0].name))
+        variant.allVariantsPrice = [0, variant.items[0].price, variant.items[0].currency]
+        return variant
+      })
+
+      return { ...el, allVariants }
+    })
+  }
+
+  if (roomsSorting === 'Meal') {
+    return [...searchedItems].map((el) => {
+      if (!el.allVariants) return { ...el }
+      const allVariants = el.allVariants.map((variant) => {
+        variant.items.sort((a, b) => a.meals[0].code.localeCompare(b.meals[0].code))
+        variant.allVariantsPrice = [0, variant.items[0].price, variant.items[0].currency]
+        return variant
+      })
+
+      return { ...el, allVariants }
+    })
+  }
+
+  if (roomsSorting === 'Price') {
+    return [...searchedItems].map((el) => {
+      if (!el.allVariants) return { ...el }
+      const allVariants = el.allVariants.map((variant) => {
+        variant.items.sort((a, b) => a.price - b.price)
+        variant.allVariantsPrice = [0, variant.items[0].price, variant.items[0].currency]
+        return variant
+      })
+
+      return { ...el, allVariants }
+    })
+  }
+
+  return searchedItems
 })
 
 onMounted(async () => {
@@ -491,9 +574,10 @@ async function clearFilters() {
   await setMeals()
 }
 
-async function loadMoreVariants({ idx, hotel_id }) {
+async function loadMoreVariants({ hotel_id }) {
   try {
     loading.value = true
+    const idx = searchedItems.value.findIndex((el) => el.hotel_id === hotel_id)
     const data = await searchItemsByHotelId(hotel_id, searchPayload.value)
     const modifiedData = data.reduce((acc, el) => {
       const group = el.guestGroup
@@ -714,7 +798,7 @@ watch(
       </div>
 
       <HotelCards
-        :items="searchedItems"
+        :items="sortedSearchItems"
         :payload="searchPayload"
         :dates="dates"
         @load-more-variants="loadMoreVariants"
