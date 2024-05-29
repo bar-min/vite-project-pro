@@ -152,7 +152,7 @@ function calcBruttoDetail(brutto, price) {
                   <div>300€ until 15.07.2024</div>
                 </div>
 
-                <div>
+                <div v-show="hotel.items.length > 1">
                   <AppRadiobutton
                     v-model="hotel.allVariantsPrice"
                     :value="[roomIdx, room.price, room.currency]"

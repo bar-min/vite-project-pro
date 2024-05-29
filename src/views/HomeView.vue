@@ -25,8 +25,9 @@ import {
   getContextItems,
   searchItems
 } from '@/common/services/filters.js'
-import { storeToRefs } from 'pinia'
+
 const store = useFiltersStore()
+const hotelsPriceSorting = store.hotelsPriceSorting
 
 const loading = ref(false)
 
@@ -101,6 +102,7 @@ const payload = ref({
   meals: selectedMealsKeys
 })
 
+const searchedPaging = ref(null)
 const searchedItems = ref([])
 
 // Validation dates field
@@ -195,7 +197,14 @@ const sortedSearchItems = computed(() => {
       if (!el.allVariants) return { ...el }
       const allVariants = el.allVariants.map((variant) => {
         variant.items.sort((a, b) => a.rooms[0].name.localeCompare(b.rooms[0].name))
-        variant.allVariantsPrice = [0, variant.items[0].price, variant.items[0].currency]
+        const allVariantsPriceIdx = variant.items.findIndex(
+          (el) => el.price === variant.allVariantsPrice[1]
+        )
+        variant.allVariantsPrice = [
+          allVariantsPriceIdx,
+          variant.items[allVariantsPriceIdx].price,
+          variant.items[allVariantsPriceIdx].currency
+        ]
         return variant
       })
 
@@ -208,7 +217,14 @@ const sortedSearchItems = computed(() => {
       if (!el.allVariants) return { ...el }
       const allVariants = el.allVariants.map((variant) => {
         variant.items.sort((a, b) => a.meals[0].code.localeCompare(b.meals[0].code))
-        variant.allVariantsPrice = [0, variant.items[0].price, variant.items[0].currency]
+        const allVariantsPriceIdx = variant.items.findIndex(
+          (el) => el.price === variant.allVariantsPrice[1]
+        )
+        variant.allVariantsPrice = [
+          allVariantsPriceIdx,
+          variant.items[allVariantsPriceIdx].price,
+          variant.items[allVariantsPriceIdx].currency
+        ]
         return variant
       })
 
@@ -221,7 +237,14 @@ const sortedSearchItems = computed(() => {
       if (!el.allVariants) return { ...el }
       const allVariants = el.allVariants.map((variant) => {
         variant.items.sort((a, b) => a.price - b.price)
-        variant.allVariantsPrice = [0, variant.items[0].price, variant.items[0].currency]
+        const allVariantsPriceIdx = variant.items.findIndex(
+          (el) => el.price === variant.allVariantsPrice[1]
+        )
+        variant.allVariantsPrice = [
+          allVariantsPriceIdx,
+          variant.items[allVariantsPriceIdx].price,
+          variant.items[allVariantsPriceIdx].currency
+        ]
         return variant
       })
 
@@ -503,6 +526,7 @@ async function search() {
     }
 
     const searchPayload = {
+      paging: searchedPaging.value,
       dateFrom: date_from,
       dateTo: date_to,
       guestsGroups: guestsGroups.value,
@@ -514,33 +538,69 @@ async function search() {
     }
 
     const data = await searchItems(searchPayload)
+    const modifiedData = {}
 
-    const modifiedData = data.map((el) => {
-      const modifiedRates = el.rates.reduce((acc, item) => {
-        const key = item.guestGroup.children_ages.length
-          ? `+${item.guestGroup.adults}-${String(item.guestGroup.children_ages)}`
-          : `+${item.guestGroup.adults}`
-        const counter = guestsGroupsCounter.value[key]
-        acc[key] ??= []
+    // Обработка ответа
+    if (!searchedPaging.value) {
+      // На бэке происходит оптимизация комнат, если указать 2 одинаковые комнаты, то в ответе будет всего 1
+      // Этот код служит проверкой для такой ситуации
 
-        for (let num in counter) {
-          acc[key].push({ ...item })
-        }
+      modifiedData.value = data.map((el) => {
+        const modifiedRates = calcRooms(el.rates)
+        const rates = Object.values(modifiedRates).flat()
+        return { ...el, rates }
+      })
+    } else {
+      // Группировка по вариантам
+      modifiedData.value = data.map((el) => {
+        const variants = el.rates.reduce((acc, el) => {
+          const group = el.guestGroup
+          const room = group.children_ages.length
+            ? `+${group.adults}-${String(group.children_ages)}`
+            : `+${group.adults}`
+          acc[room] ??= {}
+          acc[room].guestGroup = el.guestGroup
+          acc[room].items ??= []
+          acc[room].items.push(el)
+          acc[room].allVariantsPrice = [0, acc[room].items[0].price, acc[room].items[0].currency]
+          return acc
+        }, {})
 
-        return acc
-      }, {})
+        const allVariants = Object.values(variants).flat()
+        return { ...el, allVariants, showAllVariants: true }
+      })
 
-      const rates = Object.values(modifiedRates).flat()
+      // Проверка на оптимизацию комнат
+      modifiedData.value = modifiedData.value.map((el) => {
+        const variants = calcRooms(el.allVariants)
+        const allVariants = Object.values(variants).flat()
+        return { ...el, allVariants }
+      })
+    }
 
-      return { ...el, rates }
-    })
-
-    searchedItems.value = modifiedData
+    searchedItems.value = modifiedData.value
   } catch (err) {
     console.error(err)
   } finally {
     loading.value = false
   }
+}
+
+function calcRooms(data) {
+  return data.reduce((acc, item) => {
+    const group = item.guestGroup
+    const key = group.children_ages.length
+      ? `+${group.adults}-${String(group.children_ages)}`
+      : `+${group.adults}`
+    const counter = guestsGroupsCounter.value[key]
+    acc[key] ??= []
+
+    for (let num in counter) {
+      acc[key].push({ ...item })
+    }
+
+    return acc
+  }, {})
 }
 
 async function clearFilters() {
@@ -579,6 +639,8 @@ async function loadMoreVariants({ hotel_id }) {
     loading.value = true
     const idx = searchedItems.value.findIndex((el) => el.hotel_id === hotel_id)
     const data = await searchItemsByHotelId(hotel_id, searchPayload.value)
+
+    // Группировка комнат
     const modifiedData = data.reduce((acc, el) => {
       const group = el.guestGroup
       const room = group.children_ages.length
@@ -592,20 +654,8 @@ async function loadMoreVariants({ hotel_id }) {
       return acc
     }, {})
 
-    const result = Object.values(modifiedData).reduce((acc, item) => {
-      const key = item.guestGroup.children_ages.length
-        ? `+${item.guestGroup.adults}-${String(item.guestGroup.children_ages)}`
-        : `+${item.guestGroup.adults}`
-      const counter = guestsGroupsCounter.value[key]
-      acc[key] ??= []
-
-      for (let num in counter) {
-        acc[key].push({ ...item })
-      }
-
-      return acc
-    }, {})
-
+    // Проверка на оптимизацию комнат
+    const result = calcRooms(Object.values(modifiedData))
     const modifiedResult = Object.values(result).flat()
 
     searchedItems.value[idx].allVariants = modifiedResult
@@ -646,6 +696,22 @@ watch(
       mergedFieldList.value = await getContextItems()
     }
   }
+)
+
+watch(
+  () => hotelsPriceSorting,
+  async (value) => {
+    const num = parseInt(value.selected)
+
+    if (isNaN(num)) {
+      searchedPaging.value = null
+      await search()
+    } else {
+      searchedPaging.value = { size: num }
+      await search()
+    }
+  },
+  { deep: true }
 )
 </script>
 
@@ -792,7 +858,7 @@ watch(
 
           <div class="search-button-wrapper">
             <button class="clear-button" @click="clearFilters">Clear all</button>
-            <button class="search-button" @click="search">Search</button>
+            <button class="search-button" @click="search()">Search</button>
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ export const useFiltersStore = defineStore('filters', () => {
     },
     selected: {
       Hotels: 'Price (€▲)',
-      Rooms: 'Category'
+      Rooms: 'Price'
     }
   })
 
