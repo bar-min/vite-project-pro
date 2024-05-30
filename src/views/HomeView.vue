@@ -197,14 +197,18 @@ const sortedSearchItems = computed(() => {
       if (!el.allVariants) return { ...el }
       const allVariants = el.allVariants.map((variant) => {
         variant.items.sort((a, b) => a.rooms[0].name.localeCompare(b.rooms[0].name))
-        const allVariantsPriceIdx = variant.items.findIndex(
-          (el) => el.price === variant.allVariantsPrice[1]
-        )
-        variant.allVariantsPrice = [
-          allVariantsPriceIdx,
-          variant.items[allVariantsPriceIdx].price,
-          variant.items[allVariantsPriceIdx].currency
-        ]
+
+        const allVariantsPriceIdx = variant.items.findIndex((el) => {
+          return el.id === variant.allVariantsPrice.id
+        })
+
+        variant.allVariantsPrice = {
+          idx: allVariantsPriceIdx,
+          id: variant.items[allVariantsPriceIdx].id,
+          price: variant.items[allVariantsPriceIdx].price,
+          currency: variant.items[allVariantsPriceIdx].currency
+        }
+
         return variant
       })
 
@@ -217,14 +221,18 @@ const sortedSearchItems = computed(() => {
       if (!el.allVariants) return { ...el }
       const allVariants = el.allVariants.map((variant) => {
         variant.items.sort((a, b) => a.meals[0].code.localeCompare(b.meals[0].code))
-        const allVariantsPriceIdx = variant.items.findIndex(
-          (el) => el.price === variant.allVariantsPrice[1]
-        )
-        variant.allVariantsPrice = [
-          allVariantsPriceIdx,
-          variant.items[allVariantsPriceIdx].price,
-          variant.items[allVariantsPriceIdx].currency
-        ]
+
+        const allVariantsPriceIdx = variant.items.findIndex((el) => {
+          return el.id === variant.allVariantsPrice.id
+        })
+
+        variant.allVariantsPrice = {
+          idx: allVariantsPriceIdx,
+          id: variant.items[allVariantsPriceIdx].id,
+          price: variant.items[allVariantsPriceIdx].price,
+          currency: variant.items[allVariantsPriceIdx].currency
+        }
+
         return variant
       })
 
@@ -237,14 +245,17 @@ const sortedSearchItems = computed(() => {
       if (!el.allVariants) return { ...el }
       const allVariants = el.allVariants.map((variant) => {
         variant.items.sort((a, b) => a.price - b.price)
-        const allVariantsPriceIdx = variant.items.findIndex(
-          (el) => el.price === variant.allVariantsPrice[1]
-        )
-        variant.allVariantsPrice = [
-          allVariantsPriceIdx,
-          variant.items[allVariantsPriceIdx].price,
-          variant.items[allVariantsPriceIdx].currency
-        ]
+        const allVariantsPriceIdx = variant.items.findIndex((el) => {
+          return el.id === variant.allVariantsPrice.id
+        })
+
+        variant.allVariantsPrice = {
+          idx: allVariantsPriceIdx,
+          id: variant.items[allVariantsPriceIdx].id,
+          price: variant.items[allVariantsPriceIdx].price,
+          currency: variant.items[allVariantsPriceIdx].currency
+        }
+
         return variant
       })
 
@@ -562,7 +573,13 @@ async function search() {
           acc[room].guestGroup = el.guestGroup
           acc[room].items ??= []
           acc[room].items.push(el)
-          acc[room].allVariantsPrice = [0, acc[room].items[0].price, acc[room].items[0].currency]
+          acc[room].allVariantsPrice = {
+            idx: 0,
+            id: acc[room].items[0].id,
+            price: acc[room].items[0].price,
+            currency: acc[room].items[0].currency
+          }
+
           return acc
         }, {})
 
@@ -650,7 +667,12 @@ async function loadMoreVariants({ hotel_id }) {
       acc[room].guestGroup = el.guestGroup
       acc[room].items ??= []
       acc[room].items.push(el)
-      acc[room].allVariantsPrice = [0, acc[room].items[0].price, acc[room].items[0].currency]
+      acc[room].allVariantsPrice = {
+        idx: 0,
+        id: acc[room].items[0].id,
+        price: acc[room].items[0].price,
+        currency: acc[room].items[0].currency
+      }
       return acc
     }, {})
 

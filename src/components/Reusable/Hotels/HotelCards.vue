@@ -43,7 +43,7 @@ function calcFullHotelPrice(rates) {
 function calcAllVariantsPrice(variants) {
   const currency = Object.values(variants)[0].items[0].currency
   const price = Object.values(variants).reduce((acc, el) => {
-    const [idx, price, currency] = el.allVariantsPrice
+    const { price } = el.allVariantsPrice
     return parseFloat((acc + price).toFixed(2))
   }, 0)
 
@@ -155,7 +155,12 @@ function calcBruttoDetail(brutto, price) {
                 <div v-show="hotel.items.length > 1">
                   <AppRadiobutton
                     v-model="hotel.allVariantsPrice"
-                    :value="[roomIdx, room.price, room.currency]"
+                    :value="{
+                      idx: roomIdx,
+                      id: room.id,
+                      price: room.price,
+                      currency: room.currency
+                    }"
                   />
                 </div>
               </li>

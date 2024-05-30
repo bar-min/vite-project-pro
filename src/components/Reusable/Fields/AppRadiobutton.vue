@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  modelValue: { type: [Array, Boolean, String, Number] },
+  modelValue: { type: [Array, Boolean, String, Number, Object] },
   value: { type: [Boolean, Object, String, Number] },
   positionLabel: {
     type: String,
