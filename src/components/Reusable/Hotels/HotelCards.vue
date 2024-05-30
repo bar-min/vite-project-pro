@@ -56,6 +56,17 @@ function calcBruttoDetail(brutto, price) {
   const fullString = `${brutto} + ${diffPrice} (Adhots costs) = ${price} `
   return fullString
 }
+
+function calcQuotaType(item) {
+  if (!item.showAllVariants) {
+    return item.rates.some((el) => el.quotaType === 2)
+  } else {
+    return item.allVariants.some((el) => {
+      const current = el.items.find((item) => item.id === el.allVariantsPrice.id)
+      return current.quotaType === 2
+    })
+  }
+}
 </script>
 
 <template>
@@ -95,6 +106,7 @@ function calcBruttoDetail(brutto, price) {
               <div class="room-item__price" :class="[['room-item__price-color-' + room.quotaType]]">
                 {{ room.price }} {{ currencies[room.currency] }}
               </div>
+
               <div class="room-item__price-calc">
                 {{ calcBruttoDetail(room.bruttoDetail, room.price) }}
               </div>
@@ -177,7 +189,7 @@ function calcBruttoDetail(brutto, price) {
         </div>
 
         <div class="searched-items__more-price">
-          <div class="searched-items__price">
+          <div class="searched-items__price" :class="{ 'price-disabled': calcQuotaType(item) }">
             <div>
               {{
                 item.showAllVariants && item.allVariants
@@ -189,7 +201,6 @@ function calcBruttoDetail(brutto, price) {
           </div>
 
           <div
-            div
             class="searched-items__more"
             v-show="!item.showAllVariants || !item.clickedMoreVariants"
           >
@@ -350,6 +361,10 @@ function calcBruttoDetail(brutto, price) {
     flex-direction: column;
     align-items: center;
     gap: 5px;
+  }
+
+  .price-disabled {
+    background-color: hsla(0, 0%, 11%, 0.4);
   }
 
   &__more {
