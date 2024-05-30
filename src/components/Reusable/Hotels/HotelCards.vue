@@ -104,6 +104,8 @@ function calcBruttoDetail(brutto, price) {
               <div>270€ until 30.06.2024</div>
               <div>300€ until 15.07.2024</div>
             </div>
+
+            <div class="room-item__space"></div>
           </li>
         </ul>
 
@@ -152,7 +154,7 @@ function calcBruttoDetail(brutto, price) {
                   <div>300€ until 15.07.2024</div>
                 </div>
 
-                <div v-show="hotel.items.length > 1">
+                <div v-if="hotel.items.length > 1">
                   <AppRadiobutton
                     v-model="hotel.allVariantsPrice"
                     :value="{
@@ -163,6 +165,8 @@ function calcBruttoDetail(brutto, price) {
                     }"
                   />
                 </div>
+
+                <div v-else class="room-item__space"></div>
               </li>
             </ul>
           </li>
@@ -184,7 +188,11 @@ function calcBruttoDetail(brutto, price) {
             <AppIcon name="basket" size="20px" color="white" />
           </div>
 
-          <div div class="searched-items__more" v-show="!item.showAllVariants">
+          <div
+            div
+            class="searched-items__more"
+            v-show="!item.showAllVariants || !item.clickedMoreVariants"
+          >
             <button @click="emit('load-more-variants', { hotel_id: item.hotel_id })">
               <span>More variants</span>
               <AppIcon name="angle" color="#ff7715" size="18px" />
@@ -285,6 +293,10 @@ function calcBruttoDetail(brutto, price) {
     flex-direction: column;
     font-size: 14px;
   }
+
+  &__space {
+    width: 23px;
+  }
 }
 
 .searched-items {
@@ -347,7 +359,7 @@ function calcBruttoDetail(brutto, price) {
       gap: 4px;
       align-items: center;
       border-radius: 8px;
-      padding: 6px 10px;
+      padding: 6px 0;
       color: #ff7715;
       font-weight: 700;
     }

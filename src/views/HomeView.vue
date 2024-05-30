@@ -681,9 +681,14 @@ async function loadMoreVariants({ hotel_id }) {
     const modifiedResult = Object.values(result).flat()
 
     searchedItems.value[idx].allVariants = modifiedResult
-    searchedItems.value.forEach((el, elIdx) => {
-      elIdx === idx ? (el.showAllVariants = true) : (el.showAllVariants = false)
-    })
+
+    if (!searchedPaging.value) {
+      searchedItems.value.forEach((el, elIdx) => {
+        elIdx === idx ? (el.showAllVariants = true) : (el.showAllVariants = false)
+      })
+    }
+
+    searchedItems.value[idx].clickedMoreVariants = true
   } catch (err) {
     console.error(err)
   } finally {
