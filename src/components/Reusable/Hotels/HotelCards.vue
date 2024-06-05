@@ -3,7 +3,9 @@ import AppIcon from '@/components/Reusable/AppIcon.vue'
 import AppRadiobutton from '../Fields/AppRadiobutton.vue'
 import HotelsAndRoomsSorting from './HotelsAndRoomsSorting.vue'
 import HotelsPriceSorting from './HotelsPriceSorting.vue'
-import { computed } from 'vue'
+import { getHotelCard } from '@/common/services/hotels'
+import HotelDetailModal from '@/components/Reusable/Hotels/Detail/HotelDetailModal.vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   items: {
@@ -26,6 +28,9 @@ const currencies = {
   EUR: '€',
   ЛВ: 'ЛВ'
 }
+
+const hotelDetail = ref(null)
+const showHotelDetail = ref(false)
 
 const getDiffDays = computed(() => {
   if (!props.dates || props.dates?.length < 2) return
@@ -62,10 +67,16 @@ function calcQuotaType(item) {
     return item.rates.some((el) => el.quotaType === 2)
   } else {
     return item.allVariants.some((el) => {
-      const current = el.items.find((item) => item.id === el.allVariantsPrice.id)
+      const current = el.items.find((item) => item.id + item.rooms[0].id === el.allVariantsPrice.id)
       return current.quotaType === 2
     })
   }
+}
+
+async function setHotelCard(id) {
+  const data = await getHotelCard(id)
+  hotelDetail.value = data
+  showHotelDetail.value = true
 }
 </script>
 
@@ -77,7 +88,9 @@ function calcQuotaType(item) {
     </div>
 
     <div class="searched-items__block" v-for="(item, idx) in items" :key="idx">
-      <h3 class="searched-items__name">{{ item.hotel_name }} {{ getDiffDays }}</h3>
+      <h3 class="searched-items__name" @click="setHotelCard(item.hotel_id)">
+        {{ item.hotel_name }} {{ getDiffDays }}
+      </h3>
 
       <div class="searched-items__body">
         <ul class="searched-items__rooms" v-if="!item.showAllVariants || !item.allVariants">
@@ -171,7 +184,7 @@ function calcQuotaType(item) {
                     v-model="hotel.allVariantsPrice"
                     :value="{
                       idx: roomIdx,
-                      id: room.id,
+                      id: room.id + room.rooms[0].id,
                       price: room.price,
                       currency: room.currency
                     }"
@@ -212,6 +225,12 @@ function calcQuotaType(item) {
         </div>
       </div>
     </div>
+
+    <HotelDetailModal
+      :data="hotelDetail"
+      :show="showHotelDetail"
+      @close="showHotelDetail = false"
+    />
   </div>
 </template>
 
@@ -327,6 +346,7 @@ function calcQuotaType(item) {
   }
 
   &__name {
+    cursor: pointer;
     color: #ff7715;
     font-size: 20px;
     font-weight: 600;
