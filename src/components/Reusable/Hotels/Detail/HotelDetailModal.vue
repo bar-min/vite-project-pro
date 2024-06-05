@@ -65,7 +65,7 @@ watch(
     transform: translateX(100%);
     transition: all 0.4s;
     z-index: 100;
-    max-width: 650px;
+    max-width: 690px;
     &.show {
       transform: translateX(0);
     }
