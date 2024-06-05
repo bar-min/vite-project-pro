@@ -17,16 +17,17 @@ const mainOptions = {
   gap: '1rem',
   perPage: 1,
   perMove: 1,
-  pagination: false,
-  arrows: false
+  pagination: false
 }
 
 const thumbsOptions = {
   type: 'slide',
   rewind: true,
   gap: '0.5rem',
+  focus: 'center',
   pagination: false,
-  fixedWidth: 110,
+  arrows: false,
+  fixedWidth: 120,
   fixedHeight: 70,
   cover: true,
   isNavigation: true,

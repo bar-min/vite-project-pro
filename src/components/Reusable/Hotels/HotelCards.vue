@@ -78,6 +78,11 @@ async function setHotelCard(id) {
   hotelDetail.value = data
   showHotelDetail.value = true
 }
+
+function closeHotelDetail() {
+  hotelDetail.value = null
+  showHotelDetail.value = false
+}
 </script>
 
 <template>
@@ -226,11 +231,7 @@ async function setHotelCard(id) {
       </div>
     </div>
 
-    <HotelDetailModal
-      :data="hotelDetail"
-      :show="showHotelDetail"
-      @close="showHotelDetail = false"
-    />
+    <HotelDetailModal :data="hotelDetail" :show="showHotelDetail" @close="closeHotelDetail" />
   </div>
 </template>
 
