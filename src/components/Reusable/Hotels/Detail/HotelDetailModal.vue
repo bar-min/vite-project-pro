@@ -116,6 +116,7 @@ watch(
     font-size: 30px;
     font-weight: 600;
     margin-bottom: 30px;
+    color: #ff7715;
   }
 
   &__gallery {
