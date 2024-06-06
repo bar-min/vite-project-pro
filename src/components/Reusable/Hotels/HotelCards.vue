@@ -19,10 +19,6 @@ const props = defineProps({
   guestsGroupsCounter: {
     type: Object,
     default: () => {}
-  },
-  dates: {
-    type: Array,
-    default: () => []
   }
 })
 
@@ -111,7 +107,6 @@ function calcRooms(data) {
       v-for="(item, idx) in items"
       :key="idx"
       :item="item"
-      :dates="dates"
       @set-hotel-card="setHotelCard"
       @load-more-variants="({ hotel_id }) => emit('load-more-variants', { hotel_id })"
     />

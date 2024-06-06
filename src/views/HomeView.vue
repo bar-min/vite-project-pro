@@ -569,7 +569,7 @@ async function search() {
       modifiedData.value = data.map((el) => {
         const modifiedRates = calcRooms(el.rates)
         const rates = Object.values(modifiedRates).flat()
-        return { ...el, rates }
+        return { ...el, rates, dates: dates.value }
       })
     } else {
       // Группировка по вариантам
@@ -601,7 +601,7 @@ async function search() {
       modifiedData.value = modifiedData.value.map((el) => {
         const variants = calcRooms(el.allVariants)
         const allVariants = Object.values(variants).flat()
-        return { ...el, allVariants }
+        return { ...el, allVariants, dates: dates.value }
       })
     }
 

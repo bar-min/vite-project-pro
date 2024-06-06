@@ -1,16 +1,11 @@
 <script setup>
 import AppIcon from '@/components/Reusable/AppIcon.vue'
 import AppRadiobutton from '../../Fields/AppRadiobutton.vue'
-import { computed } from 'vue'
 
 const props = defineProps({
   item: {
     type: Object,
     default: () => {}
-  },
-  dates: {
-    type: Array,
-    default: () => []
   }
 })
 
@@ -20,13 +15,6 @@ const currencies = {
   EUR: '€',
   ЛВ: 'ЛВ'
 }
-
-const getDiffDays = computed(() => {
-  if (!props.dates || props.dates?.length < 2) return
-  const timeDiff = Math.abs(props.dates[1].getTime() - props.dates[0].getTime())
-  const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24))
-  return `(${diffDays + 1} days/${diffDays} nights)`
-})
 
 function calcFullHotelPrice(rates) {
   const currency = rates[0].currency

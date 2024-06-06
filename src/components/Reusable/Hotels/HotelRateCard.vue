@@ -7,10 +7,6 @@ const props = defineProps({
   item: {
     type: Object,
     default: () => {}
-  },
-  dates: {
-    type: Array,
-    default: () => []
   }
 })
 
@@ -22,8 +18,8 @@ const currencies = {
 }
 
 const getDiffDays = computed(() => {
-  if (!props.dates || props.dates?.length < 2) return
-  const timeDiff = Math.abs(props.dates[1].getTime() - props.dates[0].getTime())
+  if (!props.item.dates || props.item.dates?.length < 2) return
+  const timeDiff = Math.abs(props.item.dates[1].getTime() - props.item.dates[0].getTime())
   const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24))
   return `(${diffDays + 1} days/${diffDays} nights)`
 })
