@@ -74,9 +74,15 @@ function calcQuotaType(item) {
 }
 
 async function setHotelCard(id) {
-  const data = await getHotelCard(id)
-  hotelDetail.value = data
-  showHotelDetail.value = true
+  try {
+    const hotelCardData = await getHotelCard(id)
+    const fullHotelData = props.items.find((el) => el.hotel_id === id)
+    hotelDetail.value = { ...hotelCardData, full_hotel_name: fullHotelData.hotel_name }
+    showHotelDetail.value = true
+  } catch (err) {
+    console.error(err)
+    showHotelDetail.value = false
+  }
 }
 
 function closeHotelDetail() {
