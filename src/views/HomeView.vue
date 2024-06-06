@@ -903,6 +903,7 @@ watch(
       <HotelCards
         :items="sortedSearchItems"
         :payload="searchPayload"
+        :guests-groups-counter="guestsGroupsCounter"
         :dates="dates"
         @load-more-variants="loadMoreVariants"
       />

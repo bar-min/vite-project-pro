@@ -1,6 +1,7 @@
 <script setup>
 import HotlDetailGallery from '@/components/Reusable/Hotels/Detail/HotelDetailGallery.vue'
 import HotelDetailMap from './HotelDetailMap.vue'
+import HoteDetailRateCard from './HoteDetailRateCard.vue'
 import { watch, computed } from 'vue'
 
 const props = defineProps({
@@ -46,20 +47,21 @@ watch(
 
     <div class="hotel-modal__wrapper" :class="{ show: show }">
       <div class="hotel-modal__content" v-if="data">
-        <h2 class="hotel-modal__title">{{ data.full_hotel_name }}</h2>
+        <h2 class="hotel-modal__title">{{ data.fullHotelData.hotel_name }}</h2>
 
         <HotlDetailGallery class="hotel-modal__gallery" :slides="gallerySlides" />
+
         <div class="hotel-modal__info">
           <div></div>
           <HotelDetailMap
             class="hotel-modal__short-map"
             :coords="coords"
-            height="300px"
+            height="350px"
             map-number="1"
           />
         </div>
 
-        <HotelDetailMap :coords="coords" map-number="2" />
+        <HoteDetailRateCard :item="data.fullHotelData" />
       </div>
     </div>
   </div>
@@ -96,7 +98,7 @@ watch(
     transform: translateX(100%);
     transition: all 0.4s;
     z-index: 100;
-    max-width: 1000px;
+    max-width: 1200px;
 
     &.show {
       transform: translateX(0);
@@ -117,7 +119,7 @@ watch(
   }
 
   &__gallery {
-    margin-bottom: 60px;
+    margin-bottom: 40px;
   }
 
   &__info {
@@ -129,6 +131,10 @@ watch(
   &__short-map {
     flex-basis: 50%;
     height: 250px;
+  }
+
+  &__full-map {
+    margin-bottom: 40px;
   }
 }
 </style>

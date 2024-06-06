@@ -34,7 +34,7 @@ const thumbsOptions = {
   isNavigation: true,
   updateOnMove: true,
   lazyLoad: 'nearby',
-  preloadPages: 5
+  preloadPages: 6
 }
 
 onMounted(() => {
