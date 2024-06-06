@@ -17,7 +17,8 @@ const mainOptions = {
   gap: '1rem',
   perPage: 1,
   perMove: 1,
-  pagination: false
+  pagination: false,
+  lazyLoad: 'nearby'
 }
 
 const thumbsOptions = {
@@ -27,11 +28,13 @@ const thumbsOptions = {
   focus: 'center',
   pagination: false,
   arrows: false,
-  fixedWidth: 120,
-  fixedHeight: 70,
+  fixedWidth: 150,
+  fixedHeight: 90,
   cover: true,
   isNavigation: true,
-  updateOnMove: true
+  updateOnMove: true,
+  lazyLoad: 'nearby',
+  preloadPages: 5
 }
 
 onMounted(() => {
@@ -47,13 +50,13 @@ onMounted(() => {
   <div class="wrapper" v-show="slides.length">
     <Splide class="main-splide" :options="mainOptions" ref="main">
       <SplideSlide v-for="(slide, idx) in slides" :key="idx">
-        <img class="splide-image" :src="slide" />
+        <img class="splide-image" :data-splide-lazy="slide" />
       </SplideSlide>
     </Splide>
 
     <Splide class="thumbs-splide" :options="thumbsOptions" ref="thumbs">
       <SplideSlide v-for="(slide, idx) in slides" :key="idx">
-        <img :src="slide" />
+        <img :data-splide-lazy="slide" />
       </SplideSlide>
     </Splide>
   </div>
@@ -67,6 +70,7 @@ onMounted(() => {
 }
 
 .main-splide {
+  min-height: 400px;
   margin-bottom: 12px;
 }
 
