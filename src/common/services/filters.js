@@ -46,7 +46,7 @@ export async function getContextItems(payload = { term: '', paging: null }) {
 export async function searchItems(payload) {
   const { data } = await http.post('/filter/search', payload, {
     headers: {
-      Authorization: `Basic ${btoa('iritest:test123')}`
+      Authorization: `Basic ${btoa('megatest:sol262pr')}`
     }
   })
 
@@ -56,7 +56,7 @@ export async function searchItems(payload) {
 export async function searchItemsByHotelId(id, payload) {
   const { data } = await http.post(`/filter/search/${id}`, payload, {
     headers: {
-      Authorization: `Basic ${btoa('iritest:test123')}`
+      Authorization: `Basic ${btoa('megatest:sol262pr')}`
     }
   })
 
