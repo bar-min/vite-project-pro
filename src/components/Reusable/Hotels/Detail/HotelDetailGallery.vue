@@ -64,13 +64,13 @@ onMounted(() => {
 
 <style lang="scss">
 .splide-image {
-  height: 400px;
+  height: 500px;
   width: 100%;
   object-fit: cover;
 }
 
 .main-splide {
-  min-height: 400px;
+  min-height: 500px;
   margin-bottom: 12px;
 }
 

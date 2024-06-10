@@ -209,7 +209,8 @@ const sortedSearchItems = computed(() => {
           idx: allVariantsPriceIdx,
           id: rateId + roomId,
           price: variant.items[allVariantsPriceIdx].price,
-          currency: variant.items[allVariantsPriceIdx].currency
+          currency: variant.items[allVariantsPriceIdx].currency,
+          roomId
         }
 
         return variant
@@ -236,7 +237,8 @@ const sortedSearchItems = computed(() => {
           idx: allVariantsPriceIdx,
           id: rateId + roomId,
           price: variant.items[allVariantsPriceIdx].price,
-          currency: variant.items[allVariantsPriceIdx].currency
+          currency: variant.items[allVariantsPriceIdx].currency,
+          roomId
         }
 
         return variant
@@ -263,7 +265,8 @@ const sortedSearchItems = computed(() => {
           idx: allVariantsPriceIdx,
           id: rateId + roomId,
           price: variant.items[allVariantsPriceIdx].price,
-          currency: variant.items[allVariantsPriceIdx].currency
+          currency: variant.items[allVariantsPriceIdx].currency,
+          roomId
         }
 
         return variant
@@ -587,7 +590,8 @@ async function search() {
             idx: 0,
             id: acc[room].items[0].id + acc[room].items[0].rooms[0].id,
             price: acc[room].items[0].price,
-            currency: acc[room].items[0].currency
+            currency: acc[room].items[0].currency,
+            roomId: acc[room].items[0].rooms[0].id
           }
 
           return acc
@@ -681,7 +685,8 @@ async function loadMoreVariants({ hotel_id }) {
         idx: 0,
         id: acc[room].items[0].id + acc[room].items[0].rooms[0].id,
         price: acc[room].items[0].price,
-        currency: acc[room].items[0].currency
+        currency: acc[room].items[0].currency,
+        roomId: acc[room].items[0].rooms[0].id
       }
       return acc
     }, {})

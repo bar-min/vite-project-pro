@@ -10,7 +10,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['load-more-variants', 'set-hotel-card'])
+const emit = defineEmits(['load-more-variants', 'set-hotel-card', 'go-to-basket'])
 
 const currencies = {
   EUR: '€',
@@ -155,7 +155,8 @@ function calcQuotaType(item) {
                     idx: roomIdx,
                     id: room.id + room.rooms[0].id,
                     price: room.price,
-                    currency: room.currency
+                    currency: room.currency,
+                    roomId: room.rooms[0].id
                   }"
                 />
               </div>
@@ -171,7 +172,11 @@ function calcQuotaType(item) {
       </div>
 
       <div class="hotel-rate__more-price">
-        <div class="hotel-rate__price" :class="{ 'price-disabled': calcQuotaType(item) }">
+        <div
+          class="hotel-rate__price"
+          :class="{ 'price-disabled': calcQuotaType(item) }"
+          @click="emit('go-to-basket', item)"
+        >
           <div>
             {{
               item.showAllVariants && item.allVariants
@@ -298,6 +303,7 @@ function calcQuotaType(item) {
   }
 
   &__name {
+    display: inline-block;
     cursor: pointer;
     color: #ff7715;
     font-size: 20px;

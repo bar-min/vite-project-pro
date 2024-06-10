@@ -15,7 +15,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'go-to-basket'])
 
 const gallerySlides = computed(() => {
   if (!props.data.images) return []
@@ -61,7 +61,10 @@ watch(
           />
         </div>
 
-        <HoteDetailRateCard :item="data.fullHotelData" />
+        <HoteDetailRateCard
+          :item="data.fullHotelData"
+          @go-to-basket="(value) => emit('go-to-basket', value)"
+        />
       </div>
     </div>
   </div>

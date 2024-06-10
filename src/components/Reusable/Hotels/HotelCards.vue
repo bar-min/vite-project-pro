@@ -6,6 +6,7 @@ import HotelRateCard from './HotelRateCard.vue'
 import { getHotelCard } from '@/common/services/hotels'
 import HotelDetailModal from '@/components/Reusable/Hotels/Detail/HotelDetailModal.vue'
 import { searchItemsByHotelId } from '@/common/services/filters.js'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   items: {
@@ -22,6 +23,7 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
 const emit = defineEmits(['load-more-variants'])
 
 const hotelDetail = ref(null)
@@ -66,7 +68,8 @@ async function loadMoreVariants(id) {
       idx: 0,
       id: acc[room].items[0].id + acc[room].items[0].rooms[0].id,
       price: acc[room].items[0].price,
-      currency: acc[room].items[0].currency
+      currency: acc[room].items[0].currency,
+      roomId: acc[room].items[0].rooms[0].id
     }
     return acc
   }, {})
@@ -94,6 +97,37 @@ function calcRooms(data) {
     return acc
   }, {})
 }
+
+function goToBasket(item) {
+  const hotel_id = item.hotel_id
+  const rate_id = item.rates[0].id
+  const rooms = {}
+
+  if (!item.allVariants) {
+    rooms.value = item.rates.map((el) => {
+      const group = el.guestGroup
+      const guests = group.children_ages.length
+        ? `${group.adults}-${String(group.children_ages)}`
+        : `${group.adults}`
+      return `${el.rooms[0].id}-${guests}`
+    })
+  } else {
+    rooms.value = item.allVariants.map((el) => {
+      const group = el.guestGroup
+      const guests = group.children_ages.length
+        ? `${group.adults}-${String(group.children_ages)}`
+        : `${group.adults}`
+      return `${el.allVariantsPrice.roomId}-${guests}`
+    })
+  }
+
+  const routeData = router.resolve({
+    name: 'Basket',
+    query: { hotel_id, rate_id, rooms: rooms.value }
+  })
+
+  window.open(routeData.href, '_blank')
+}
 </script>
 
 <template>
@@ -109,9 +143,15 @@ function calcRooms(data) {
       :item="item"
       @set-hotel-card="setHotelCard"
       @load-more-variants="({ hotel_id }) => emit('load-more-variants', { hotel_id })"
+      @go-to-basket="goToBasket"
     />
 
-    <HotelDetailModal :data="hotelDetail" :show="showHotelDetail" @close="closeHotelDetail" />
+    <HotelDetailModal
+      :data="hotelDetail"
+      :show="showHotelDetail"
+      @close="closeHotelDetail"
+      @go-to-basket="goToBasket"
+    />
   </div>
 </template>
 
